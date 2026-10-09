@@ -15,9 +15,9 @@ function humourWords(humour: number): string {
 }
 
 function honestyWords(honesty: number): string {
-  if (honesty < 25) return "Be gentle. Leave out anything unflattering.";
+  if (honesty < 25) return "Be gentle and positive. Do not point out waste, problems or anything unflattering.";
   if (honesty < 60) return "Be straightforward.";
-  return "Be blunt. Say plainly what the facts show, even when it is unflattering.";
+  return "Be blunt. If the facts show something unflattering or wasteful, such as a room warmer than its heating target, say so directly.";
 }
 
 /** The instructions sent to the model. Facts are given as data, and the rules forbid inventing more. */

@@ -67,3 +67,15 @@ describe("isAcceptable and claims about the music", () => {
     expect(isAcceptable("Radiohead in the kitchen. Bold, and not a bad idea.", music)).toBe(true);
   });
 });
+
+describe("isAcceptable and a worked-out gap", () => {
+  const home = { roomTemperatureC: 23, heatingTargetC: 20, degreesFromTarget: 3, weather: "rainy" };
+
+  it("accepts a reply that quotes the gap", () => {
+    expect(isAcceptable("The kitchen is running 3 degrees above its heating target.", home)).toBe(true);
+  });
+
+  it("rejects a gap that was not worked out", () => {
+    expect(isAcceptable("The kitchen is running 7 degrees above its heating target.", home)).toBe(false);
+  });
+});

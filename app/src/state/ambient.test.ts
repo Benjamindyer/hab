@@ -33,10 +33,31 @@ describe("buildAmbientView", () => {
 });
 
 describe("ambient facts and key", () => {
-  const view = { time: "14:04", date: "x", room: "Kitchen", indoor: 22.4, outside: 17.6, condition: "rainy", note: "n" };
+  const view = { time: "14:04", date: "x", room: "Kitchen", indoor: 22.4, target: 20, outside: 17.6, condition: "rainy", note: "n" };
 
   it("lists only the facts the model may use", () => {
-    expect(ambientFacts(view)).toEqual({ time: "14:04", room: "Kitchen", roomTemperatureC: 22.4, outsideTemperatureC: 17.6, weather: "rainy" });
+    expect(ambientFacts(view)).toEqual({
+      time: "14:04",
+      room: "Kitchen",
+      roomTemperatureC: 22.4,
+      heatingTargetC: 20,
+      roomComparedWithTarget: "warmer than the heating target",
+      degreesFromTarget: 2.4,
+      outsideTemperatureC: 17.6,
+      weather: "rainy",
+    });
+  });
+
+  it("works out the gap to the target so a reply can quote it", () => {
+    expect(ambientFacts({ ...view, indoor: 23, target: 20 }).degreesFromTarget).toBe(3);
+    expect(ambientFacts({ ...view, indoor: 18.5, target: 20 }).degreesFromTarget).toBe(1.5);
+    expect(ambientFacts({ ...view, target: null }).degreesFromTarget).toBeNull();
+  });
+
+  it("says how the room compares with its heating target", () => {
+    expect(ambientFacts({ ...view, indoor: 18 }).roomComparedWithTarget).toBe("cooler than the heating target");
+    expect(ambientFacts({ ...view, indoor: 20 }).roomComparedWithTarget).toBe("at the heating target");
+    expect(ambientFacts({ ...view, target: null }).roomComparedWithTarget).toBeNull();
   });
 
   it("stays the same within the hour and changes with the hour or the weather", () => {
