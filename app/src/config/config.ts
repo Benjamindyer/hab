@@ -1,6 +1,7 @@
 import type { Personality } from "../state/personality";
 import { parseLlm, type LlmConfig } from "./parseLlm";
 import { parseMusic, type MusicConfig } from "./parseMusic";
+import { parsePower, type PowerConfig } from "./parsePower";
 
 export interface AmbientConfig {
   room: string;
@@ -15,6 +16,7 @@ export interface HabConfig {
   personality: Personality;
   ambient: AmbientConfig;
   music?: MusicConfig;
+  power?: PowerConfig;
   llm?: LlmConfig;
   satellite?: string;
 }
@@ -41,12 +43,14 @@ function parseAmbient(raw: unknown): AmbientConfig {
 export function parseConfig(raw: unknown): HabConfig {
   if (!isObject(raw)) throw new Error("hab.config.json must be a JSON object.");
   const music = parseMusic(raw["music"]);
+  const power = parsePower(raw["power"]);
   const llm = parseLlm(raw["llm"]);
   return {
     ...optionalText("haUrl", raw["haUrl"]),
     personality: parsePersonality(raw["personality"]),
     ambient: parseAmbient(raw["ambient"]),
     ...(music && { music }),
+    ...(power && { power }),
     ...(llm && { llm }),
     ...optionalText("satellite", raw["satellite"]),
   };

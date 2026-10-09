@@ -22,5 +22,19 @@
   },
   "llm": {
     "personality": "ai_task.your_model"
+  },
+  "power": {
+    "grid": "sensor.house_demand",
+    "solar": "sensor.solar_power",
+    "car": "sensor.car_charger_power",
+    "carPlug": "binary_sensor.car_plugged_in",
+    "carCharge": "sensor.car_battery_level",
+    "rate": "sensor.electricity_rate",
+    "nextRate": "sensor.electricity_next_rate",
+    "offPeak": "binary_sensor.electricity_off_peak",
+    "cost": "sensor.electricity_cost_today",
+    "usage": "sensor.electricity_used_today",
+    "solarToday": "sensor.solar_energy_today",
+    "solarLeft": "sensor.solar_forecast_remaining_today"
   }
 }

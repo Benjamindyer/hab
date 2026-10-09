@@ -11,6 +11,7 @@ import { chooseScene, type SceneId } from "../state/scene";
 import type { ServiceRunner } from "../state/services";
 import { createAmbientScene } from "./ambientScene";
 import { createMusicScene } from "./musicScene";
+import { createPowerScene } from "./powerScene";
 import { createNav } from "./nav";
 import { createSetupScene } from "./setup/setupScene";
 import { createWeatherScene } from "./weatherScene";
@@ -40,7 +41,7 @@ export interface AppDeps {
 export function mountApp(root: HTMLElement, deps: AppDeps): void {
   const { entities, config, haUrl, run, browser, commentary, settings, musicInfo, forecast } = deps;
   const fallback = createAmbientScene();
-  const scenes: Scene[] = [fallback, createWeatherScene(), createMusicScene(), ...(settings ? [createSetupScene()] : [])];
+  const scenes: Scene[] = [fallback, createWeatherScene(), createPowerScene(), createMusicScene(), ...(settings ? [createSetupScene()] : [])];
   const slab = createSlab();
   let requested: SceneId | null = null;
   let lastTouch = Date.now();
