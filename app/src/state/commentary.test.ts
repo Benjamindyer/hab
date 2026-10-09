@@ -7,13 +7,13 @@ const request = (key: string, over: Partial<CommentRequest> = {}): CommentReques
   kind: "ambient", key, fallback: "Fallback line.", facts: { indoor: 22 }, ...over,
 });
 
-function fake(reply: string | Error): TextGenerator & { calls: number } {
+function fake(reply: string | Error | string[]): TextGenerator & { calls: number } {
   const g = {
     calls: 0,
     async generate() {
       g.calls += 1;
       if (reply instanceof Error) throw reply;
-      return reply;
+      return Array.isArray(reply) ? (reply[g.calls - 1] ?? reply[reply.length - 1] ?? "") : reply;
     },
   };
   return g;
@@ -38,7 +38,25 @@ describe("createCommentary", () => {
     await commentary.settled();
     expect(commentary.line(request("a"), dials)).toBe("Fallback line.");
     expect(commentary.line(request("a"), dials)).toBe("Fallback line.");
-    expect(generator.calls).toBe(1);
+    expect(generator.calls).toBe(2);
+  });
+
+  it("asks again when a reply fails the checks, and uses the good one", async () => {
+    const generator = fake(["It is 41 degrees.", "Warm in here."]);
+    const commentary = createCommentary(generator);
+    commentary.line(request("a"), dials);
+    await commentary.settled();
+    expect(commentary.line(request("a"), dials)).toBe("Warm in here.");
+    expect(generator.calls).toBe(2);
+  });
+
+  it("keeps the fixed line after every attempt fails the checks", async () => {
+    const generator = fake("It is 41 degrees.");
+    const commentary = createCommentary(generator, { attempts: 3 });
+    commentary.line(request("a"), dials);
+    await commentary.settled();
+    expect(commentary.line(request("a"), dials)).toBe("Fallback line.");
+    expect(generator.calls).toBe(3);
   });
 
   it("spaces requests out", async () => {

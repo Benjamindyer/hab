@@ -25,6 +25,8 @@ export interface CommentaryOptions {
   backoffMs?: number;
   /** Let music lines use what the model knows. Off unless the owner chose it. */
   musicKnowledge?: boolean;
+  /** How many times to ask when a reply fails the checks, before keeping the fixed line. */
+  attempts?: number;
 }
 
 interface Entry {
@@ -46,7 +48,7 @@ interface Pace {
  * redraws every second does not ask every second.
  */
 export function createCommentary(generator: TextGenerator | null, options: CommentaryOptions = {}): Commentary {
-  const { name = "the assistant", clock = Date.now, minGapMs = 120_000, backoffMs = 300_000, musicKnowledge = false } = options;
+  const { name = "the assistant", clock = Date.now, minGapMs = 120_000, backoffMs = 300_000, musicKnowledge = false, attempts = 2 } = options;
   const cache = new Map<CommentKind, Entry>();
   const pace = new Map<CommentKind, Pace>();
   const paceOf = (kind: CommentKind): Pace => {
@@ -57,14 +59,17 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
 
   async function ask(request: CommentRequest, dials: Personality, key: string): Promise<void> {
     if (!generator) return;
+    const instructions = buildInstructions({ kind: request.kind, facts: request.facts, dials, name, knowledge: musicKnowledge });
+    const ownKnowledge = musicKnowledge && request.kind === "music";
     try {
-      const reply = await generator.generate({
-        taskName: `HAB ${request.kind} comment`,
-        instructions: buildInstructions({ kind: request.kind, facts: request.facts, dials, name, knowledge: musicKnowledge }),
-      });
-      const text = reply.trim();
-      const ownKnowledge = musicKnowledge && request.kind === "music";
-      cache.set(request.kind, { key, text: isAcceptable(text, request.facts, { ownKnowledge }) ? text : null });
+      for (let attempt = 0; attempt < attempts; attempt++) {
+        const text = (await generator.generate({ taskName: `HAB ${request.kind} comment`, instructions })).trim();
+        if (isAcceptable(text, request.facts, { ownKnowledge })) {
+          cache.set(request.kind, { key, text });
+          return;
+        }
+      }
+      cache.set(request.kind, { key, text: null });
     } catch {
       paceOf(request.kind).lastFail = clock();
     }
