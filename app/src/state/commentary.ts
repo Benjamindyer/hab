@@ -31,6 +31,13 @@ interface Entry {
   text: string | null;
 }
 
+/** What is tracked for each kind of line, so the music line never waits on the home line. */
+interface Pace {
+  busy: Promise<void> | null;
+  lastAsk: number;
+  lastFail: number;
+}
+
 /**
  * Gives the screen a line from the model without ever depending on it. The fallback shows at once,
  * the model's line replaces it when it arrives, and requests are spaced out so a screen that
@@ -39,9 +46,12 @@ interface Entry {
 export function createCommentary(generator: TextGenerator | null, options: CommentaryOptions = {}): Commentary {
   const { name = "the assistant", clock = Date.now, minGapMs = 120_000, backoffMs = 300_000 } = options;
   const cache = new Map<CommentKind, Entry>();
-  let busy: Promise<void> | null = null;
-  let lastAsk = Number.NEGATIVE_INFINITY;
-  let lastFail = Number.NEGATIVE_INFINITY;
+  const pace = new Map<CommentKind, Pace>();
+  const paceOf = (kind: CommentKind): Pace => {
+    const found = pace.get(kind) ?? { busy: null, lastAsk: Number.NEGATIVE_INFINITY, lastFail: Number.NEGATIVE_INFINITY };
+    pace.set(kind, found);
+    return found;
+  };
 
   async function ask(request: CommentRequest, dials: Personality, key: string): Promise<void> {
     if (!generator) return;
@@ -53,11 +63,11 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
       const text = reply.trim();
       cache.set(request.kind, { key, text: isAcceptable(text, request.facts) ? text : null });
     } catch {
-      lastFail = clock();
+      paceOf(request.kind).lastFail = clock();
     }
   }
 
-  const due = (): boolean => !busy && clock() - lastAsk >= minGapMs && clock() - lastFail >= backoffMs;
+  const due = (p: Pace): boolean => !p.busy && clock() - p.lastAsk >= minGapMs && clock() - p.lastFail >= backoffMs;
 
   return {
     line(request, dials) {
@@ -65,12 +75,13 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
       const key = `${request.key}|${dials.humour}/${dials.honesty}`;
       const hit = cache.get(request.kind);
       if (hit?.key === key) return hit.text ?? request.fallback;
-      if (due()) {
-        lastAsk = clock();
-        busy = ask(request, dials, key).finally(() => { busy = null; });
+      const p = paceOf(request.kind);
+      if (due(p)) {
+        p.lastAsk = clock();
+        p.busy = ask(request, dials, key).finally(() => { p.busy = null; });
       }
       return request.fallback;
     },
-    settled: async () => { await busy; },
+    settled: async () => { await Promise.all([...pace.values()].map((p) => p.busy)); },
   };
 }

@@ -15,6 +15,10 @@ describe("buildInstructions", () => {
     expect(buildInstructions("music", facts, { humour: 0, honesty: 0 }, "X")).toContain("Never invent facts");
   });
 
+  it("forbids claims about the music that the facts do not contain", () => {
+    expect(buildInstructions("music", facts, { humour: 0, honesty: 0 }, "X")).toContain("no year, decade, genre");
+  });
+
   it("describes the dials in words", () => {
     expect(buildInstructions("music", facts, { humour: 0, honesty: 100 }, "X")).toMatch(/No jokes.*Be blunt/s);
     expect(buildInstructions("music", facts, { humour: 100, honesty: 0 }, "X")).toMatch(/Clearly funny.*Be gentle/s);

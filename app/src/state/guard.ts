@@ -18,10 +18,18 @@ function wordNumbersIn(text: string): number[] {
   });
 }
 
+const DECADE = /\b(?:twenties|thirties|forties|fifties|sixties|seventies|eighties|nineties|noughties|aughts)\b/gi;
+
 const numbersIn = (text: string): number[] => (text.match(NUMBER) ?? []).map(Number);
 
 function factNumbers(facts: Facts): number[] {
   return Object.values(facts).flatMap((value) => (value === null ? [] : numbersIn(String(value))));
+}
+
+/** A decade such as "nineties" is a claim about the music. It is fine only if the facts already say it. */
+function decadesAreGrounded(text: string, facts: Facts): boolean {
+  const known = Object.values(facts).join(" ").toLowerCase();
+  return (text.match(DECADE) ?? []).every((word) => known.includes(word.toLowerCase()));
 }
 
 /** A number in the reply, in digits or in words, is fine if the facts contain it or a value that rounds to it. */
@@ -34,5 +42,5 @@ export function numbersAreGrounded(text: string, facts: Facts): boolean {
 export function isAcceptable(text: string, facts: Facts): boolean {
   if (text.length === 0 || text.length > MAX_LENGTH) return false;
   if (/[\n\r]/.test(text)) return false;
-  return numbersAreGrounded(text, facts);
+  return numbersAreGrounded(text, facts) && decadesAreGrounded(text, facts);
 }

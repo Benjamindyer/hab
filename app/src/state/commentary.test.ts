@@ -84,6 +84,15 @@ describe("createCommentary failures and changes", () => {
     expect(generator.calls).toBe(2);
   });
 
+  it("does not make the music line wait for the home line", async () => {
+    const generator = fake("Fine.");
+    const commentary = createCommentary(generator, { minGapMs: 60_000 });
+    commentary.line(request("a"), dials);
+    commentary.line(request("b", { kind: "music" }), dials);
+    await commentary.settled();
+    expect(generator.calls).toBe(2);
+  });
+
   it("keeps ambient and music lines apart", async () => {
     const commentary = createCommentary(fake("Line."), { minGapMs: 0 });
     commentary.line(request("a"), dials);

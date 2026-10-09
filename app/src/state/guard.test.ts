@@ -51,3 +51,19 @@ describe("isAcceptable", () => {
     expect(isAcceptable("Only 5 degrees tonight.", facts)).toBe(false);
   });
 });
+
+describe("isAcceptable and claims about the music", () => {
+  const music = { track: "Ripcord", artist: "Radiohead", speaker: "kitchen", state: "playing" };
+
+  it("rejects a decade the facts do not mention", () => {
+    expect(isAcceptable("A nineties track, then.", music)).toBe(false);
+  });
+
+  it("accepts a decade that is in the facts", () => {
+    expect(isAcceptable("Nineties it is.", { ...music, track: "Nineties Mix" })).toBe(true);
+  });
+
+  it("accepts an opinion", () => {
+    expect(isAcceptable("Radiohead in the kitchen. Bold, and not a bad idea.", music)).toBe(true);
+  });
+});

@@ -28,6 +28,7 @@ export function buildInstructions(kind: CommentKind, facts: Facts, dials: Person
     `Humour ${dials.humour} out of 100: ${humourWords(dials.humour)}`,
     `Honesty ${dials.honesty} out of 100: ${honestyWords(dials.honesty)}`,
     "Rules: use only the facts below. Never invent facts, numbers, names or events.",
+    "Do not state anything about a song or artist that is not in the facts: no year, decade, genre, album or band members. An opinion is fine.",
     "At most two short sentences and under 200 characters. Plain text only: no emoji, quotation marks or markdown. British English.",
     `Facts: ${JSON.stringify(facts)}`,
   ].join("\n");
