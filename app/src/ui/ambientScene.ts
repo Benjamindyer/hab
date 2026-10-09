@@ -1,5 +1,8 @@
 import { ambientFacts, ambientKey, buildAmbientView } from "../state/ambient";
+import { buildMusicView } from "../state/music";
+import { nowPlayingSummary } from "../state/nowPlaying";
 import { setText } from "./dom";
+import { createNowPlayingWidget } from "./nowPlayingWidget";
 import type { Scene, SceneContext } from "./scene";
 
 const degrees = (value: number | null): string => (value === null ? "--" : `${value.toFixed(1)}°`);
@@ -29,12 +32,15 @@ export function createAmbientScene(): Scene {
   const clock = textBlock("clock mono");
   const date = textBlock("date");
   const note = textBlock("note");
-  element.append(indoor.box, outside.box, clock, date, note);
+  const widget = createNowPlayingWidget();
+  element.append(indoor.box, outside.box, clock, date, widget.element, note);
 
   return {
     id: "ambient",
     element,
-    update({ entities, config, now, commentary }: SceneContext): void {
+    update({ entities, config, now, commentary, haUrl, navigate }: SceneContext): void {
+      const music = config.music ? buildMusicView(entities, config.music, now, haUrl) : null;
+      widget.update(music ? nowPlayingSummary(music) : null, () => navigate("music"));
       const view = buildAmbientView(entities, config.ambient, config.personality, now);
       setText(indoor.label, view.room);
       setText(indoor.value, degrees(view.indoor));

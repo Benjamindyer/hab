@@ -42,11 +42,14 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
   let requested: SceneId | null = null;
   let lastTouch = Date.now();
 
-  const labelled = scenes.flatMap((s) => (s.label ? [{ id: s.id, label: s.label }] : []));
-  const nav = createNav([{ id: "ambient", label: "Home" }, ...labelled], (id) => {
+  const pick = (id: SceneId): void => {
     requested = id === "ambient" ? null : id;
+    lastTouch = Date.now();
     refresh();
-  });
+  };
+
+  const labelled = scenes.flatMap((s) => (s.label ? [{ id: s.id, label: s.label }] : []));
+  const nav = createNav([{ id: "ambient", label: "Home" }, ...labelled], pick);
 
   const stage = document.createElement("div");
   stage.id = "stage";
@@ -72,7 +75,7 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
     nav.setActive(active.id);
     slab.setVoice(inputs.voice);
     slab.setMusic(musicSeed(entities, config.music?.player));
-    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo });
+    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo, navigate: pick });
   }
 
   entities.subscribe(refresh);

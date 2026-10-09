@@ -39,7 +39,7 @@ With no settings saved, HAB works out what you have and fills in its own: the fi
 
 ### Controlling music by touch
 
-On the Music screen's Now playing page, **tap** to pause or play, **swipe left** for the next track and **swipe right** for the previous one. The small buttons and the volume knob are there too. The Library and Speakers pages are reached with the tabs at the top. While music is playing, HAB stays on the Music screen until you choose to leave it.
+On the Music screen's Now playing page, **tap** to pause or play, **swipe left** for the next track and **swipe right** for the previous one. The small buttons and the volume knob are there too. The Library and Speakers pages are reached with the tabs at the top. On the home screen, a small now playing widget appears under the date while music plays or is paused. Touch it to open the Music screen. While music is playing, HAB stays on the Music screen until you choose to leave it.
 
 ### Connect music and a language model
 

@@ -20,6 +20,8 @@ export interface SceneContext {
   settings: SettingsService | null;
   /** Present only when the owner turned on music facts. */
   musicInfo: MusicInfoLookup | null;
+  /** Moves the screen to another scene, as if the user had chosen it. */
+  navigate(scene: SceneId): void;
 }
 
 /** Every scene is a self-contained module with this shape. */
