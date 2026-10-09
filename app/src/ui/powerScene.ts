@@ -1,4 +1,4 @@
-import { buildPowerView, rateTone, type PowerView } from "../state/power";
+import { buildPowerView, type PowerView } from "../state/power";
 import { powerNote } from "../state/powerNote";
 import { el } from "./dom";
 import { createDiagram, createPanel } from "./powerParts";
@@ -41,7 +41,6 @@ export function createPowerScene(): Scene {
     update({ entities, config, speak }: SceneContext): void {
       const view = buildPowerView(entities, config.power);
       diagram.update(view);
-      rate.element.dataset["tone"] = rateTone(view);
       rate.update(one(view.rate), "p", rateDetail(view));
       used.update(pounds(view.cost), "", view.usage === null ? "" : `${one(view.usage)} kWh`);
       const total = view.solarToday === null ? null : view.solarToday + (view.solarLeft ?? 0);

@@ -87,13 +87,3 @@ export function buildPowerView(store: EntityStore, config: PowerConfig | undefin
     empty: Object.keys(c).length === 0,
   };
 }
-
-export type RateTone = "cheap" | "dear" | "normal";
-
-const DEAR_PENCE = 25;
-
-/** Says whether the price now is a cheap one, a dear one or neither. */
-export function rateTone(view: Pick<PowerView, "rate" | "offPeak">): RateTone {
-  if (view.offPeak === true) return "cheap";
-  return view.rate !== null && view.rate >= DEAR_PENCE ? "dear" : "normal";
-}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildPowerView, kilowatts, rateTone } from "./power";
+import { buildPowerView, kilowatts } from "./power";
 import { fakeStore } from "./testing";
 
 describe("kilowatts", () => {
@@ -39,14 +39,5 @@ describe("buildPowerView", () => {
 
   it("is empty with no config", () => {
     expect(buildPowerView(store, undefined).empty).toBe(true);
-  });
-});
-
-describe("rateTone", () => {
-  it("is cheap off-peak, dear above 25p and normal otherwise", () => {
-    expect(rateTone({ rate: 6.5, offPeak: true })).toBe("cheap");
-    expect(rateTone({ rate: 28.9, offPeak: false })).toBe("dear");
-    expect(rateTone({ rate: 18, offPeak: false })).toBe("normal");
-    expect(rateTone({ rate: null, offPeak: null })).toBe("normal");
   });
 });
