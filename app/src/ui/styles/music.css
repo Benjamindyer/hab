@@ -19,6 +19,14 @@
   transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.2, 1), left 1.2s ease, width 1.2s ease, height 1.2s ease, top 1.2s ease;
 }
 #s-music .record.out { transform: translateX(calc(var(--art) * 0.56)); }
+/* A soft glow in the colours of the cover, made from a blurred copy of it, behind the record. */
+#s-music .record .glow {
+  position: absolute; left: -9%; top: -9%; width: 118%; height: 118%; border-radius: 50%; object-fit: cover;
+  filter: blur(4vmin) saturate(1.6); opacity: 0; z-index: -1; pointer-events: none; transition: opacity 1.4s ease;
+}
+#s-music .record.out .glow { opacity: 0.5; }
+#s-music .record.out .glow.live { animation: breathe 5s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: 0.78; transform: scale(1.05); } }
 /* The light stays still while the record turns under it. */
 #s-music .record::after {
   content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
@@ -40,6 +48,7 @@
 @media (prefers-reduced-motion: reduce) {
   #s-music .disc { animation: none; }
   #s-music .record { transition: none; }
+  #s-music .record .glow.live { animation: none; }
 }
 
 /* The details sit to the right of the record and take the room that is left. */
