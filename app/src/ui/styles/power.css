@@ -39,3 +39,13 @@
 #s-power .supplier .head { fill: var(--dim); }
 #s-power .supplier .leg { fill: none; stroke: var(--dim); stroke-width: 2; stroke-linecap: round; }
 #s-power .supplier .name { fill: var(--dim); font-size: 10px; letter-spacing: 0.2em; }
+
+/* The house: dark faces with light edges, so it reads as a solid shape on the black. */
+#s-power .house polygon { stroke: #ffffff33; stroke-width: 1; stroke-linejoin: round; }
+#s-power .shadow { fill: #000; opacity: 0.55; }
+#s-power .wall.left { fill: #101318; }
+#s-power .wall.right { fill: #171b21; }
+#s-power .roof { fill: #1d222a; }
+#s-power .panel { fill: color-mix(in srgb, var(--solar) calc(var(--level, 0) * 70%), #0a1220); stroke: color-mix(in srgb, var(--solar) 40%, #ffffff22); }
+#s-power .window { fill: color-mix(in srgb, var(--ink) calc(var(--level, 0) * 80% + 12%), #0b0d11); stroke: #ffffff22; }
+#s-power .mid { text-anchor: middle; }

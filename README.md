@@ -39,7 +39,7 @@ With no settings saved, HAB works out what you have and fills in its own: the fi
 
 ### The energy screen
 
-Choose **Energy** in the menu. It shows solar, grid, house and car power, with dotted lines that move while power flows, plus the electricity rate now, what today has cost, solar made today and the car's charge. Choose the sensors in Setup, under Energy (or in a `power` section of `hab.config.json`, see `hab.config.example.json`). Every sensor is optional, and a missing one shows `--`. The house figure is grid plus solar, so surplus solar sent to the grid is not subtracted.
+Choose **Energy** in the menu. It shows a small 3D house with solar, grid and car power around it, with dotted lines that move while power flows, plus the electricity rate now, what today has cost, solar made today and the car's charge. Choose the sensors in Setup, under Energy (or in a `power` section of `hab.config.json`, see `hab.config.example.json`). Every sensor is optional, and a missing one shows `--`. The house figure is grid plus solar, so surplus solar sent to the grid is not subtracted.
 
 ### The weather screen
 

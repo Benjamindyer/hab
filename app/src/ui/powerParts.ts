@@ -1,7 +1,8 @@
 import type { PowerView } from "../state/power";
+import { createHouse } from "./powerHouse";
 import { el, setText } from "./dom";
+import { NS, setLevel, svgEl } from "./svg";
 
-const NS = "http://www.w3.org/2000/svg";
 const FLOWING = 0.02;
 
 const text = (cls: string, x: number, y: number, value = ""): SVGTextElement => {
@@ -52,13 +53,6 @@ function show(n: Node, value: string): void {
 
 const fmt = (n: number | null): string => (n === null ? "--" : String(Number(n.toFixed(n < 10 ? 2 : 1))));
 
-const svgEl = (tag: string, attrs: Record<string, string | number>, cls = ""): SVGElement => {
-  const e = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  if (cls) e.setAttribute("class", cls);
-  return e;
-};
-
 /** A small sun whose rays turn, beside the solar number. */
 function sunIcon(x: number, y: number): SVGGElement {
   const g = svgEl("g", { transform: `translate(${x} ${y})` }, "icon sun") as SVGGElement;
@@ -75,11 +69,6 @@ function gridIcon(x: number, y: number): SVGGElement {
   return g;
 }
 
-/** Sets how strongly an icon moves, from 0 (still and dim) to 1 (full). */
-const setLevel = (icon: SVGElement, level: number): void => {
-  icon.style.setProperty("--level", String(Math.max(0, Math.min(1, level))));
-};
-
 /** A tiny octopus drawn for HAB, with the supplier's name beside it. It is not the supplier's own logo. */
 function supplierMark(x: number, y: number, name: string): SVGGElement {
   const g = svgEl("g", { transform: `translate(${x} ${y})` }, "supplier") as SVGGElement;
@@ -89,6 +78,18 @@ function supplierMark(x: number, y: number, name: string): SVGGElement {
   label.textContent = name;
   g.append(label);
   return g;
+}
+
+/** The label under the house: its name and how much power it is using. */
+function houseReadout(x: number, y: number): Node {
+  const group = svgEl("g", {}, "node readout");
+  const big = text("v mid", x, y + 48);
+  const value = document.createTextNode("");
+  const unit = svgEl("tspan", { dx: 8 }, "u");
+  unit.textContent = "kW";
+  big.append(value, unit);
+  group.append(text("k mid", x, y, "HOUSE"), big);
+  return { group, value };
 }
 
 const SOLAR_FULL_KW = 1.5;
@@ -102,25 +103,27 @@ export interface Diagram {
 /** The picture of power moving between the sun, the grid, the house and the car. */
 export function createDiagram(): Diagram {
   const element = document.createElementNS(NS, "svg");
-  element.setAttribute("viewBox", "0 0 1000 450");
+  element.setAttribute("viewBox", "0 0 1000 480");
   element.setAttribute("preserveAspectRatio", "xMidYMid meet");
-  const flows = { solar: line("M190 90 H400 V190", "solar"), grid: line("M810 90 H600 V190", "grid"), car: line("M500 290 V330", "car") };
+  const flows = { solar: line("M190 90 H560 V172", "solar"), grid: line("M810 90 H655 V232", "grid"), car: line("M412 300 H310 V390 H190", "car") };
   const solar = node("SOLAR", "solar", [0, 30, 190]);
   const grid = node("GRID", "grid", [810, 30, 190]);
-  const house = node("HOUSE", "house", [400, 170, 200]);
-  const car = node("CAR", "car", [405, 330, 190]);
+  const house = createHouse();
+  const readout = houseReadout(500, 418);
+  const car = node("CAR", "car", [0, 330, 190]);
   const sun = sunIcon(150, 66);
   const pulse = gridIcon(960, 66);
   solar.group.append(sun);
   grid.group.append(pulse, supplierMark(830, 128, "OCTOPUS ENERGY"));
-  element.append(...Object.values(flows), solar.group, grid.group, house.group, car.group);
+  element.append(...Object.values(flows), house.group, solar.group, grid.group, readout.group, car.group);
 
   return {
     element,
     update(view) {
       show(solar, fmt(view.solar));
       show(grid, fmt(view.grid));
-      show(house, fmt(view.house));
+      show(readout, fmt(view.house));
+      house.update(view);
       show(car, fmt(view.car));
       setLevel(sun, (view.solar ?? 0) / SOLAR_FULL_KW);
       setLevel(pulse, (view.grid ?? 0) / GRID_FULL_KW);
