@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add HAB",
+        "description": "HAB adds a screen and assistant front end to Home Assistant. It appears in the sidebar, and the wall screen address is /hab_static/index.html."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HAB is already set up."
+    }
+  }
+}

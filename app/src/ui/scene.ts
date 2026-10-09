@@ -1,0 +1,26 @@
+import type { HabConfig } from "../config/config";
+import type { Commentary } from "../state/commentary";
+import type { EntityStore } from "../state/entities";
+import type { MediaBrowser } from "../state/library";
+import type { SceneId } from "../state/scene";
+import type { ServiceRunner } from "../state/services";
+
+/** What a scene is given each time it redraws. */
+export interface SceneContext {
+  entities: EntityStore;
+  config: HabConfig;
+  now: Date;
+  haUrl: string;
+  run: ServiceRunner;
+  browser: MediaBrowser;
+  commentary: Commentary;
+}
+
+/** Every scene is a self-contained module with this shape. */
+export interface Scene {
+  id: SceneId;
+  /** Label for the scene switcher. Scenes without one are not listed. */
+  label?: string;
+  element: HTMLElement;
+  update(context: SceneContext): void;
+}

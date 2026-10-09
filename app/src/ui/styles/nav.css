@@ -1,0 +1,28 @@
+.nav {
+  position: absolute;
+  left: 50%;
+  bottom: 2.4vh;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.2vmin;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.nav.awake { opacity: 1; pointer-events: auto; }
+
+.nav-item {
+  background: #0c0e12cc;
+  border: 1px solid #2c3036;
+  color: var(--dim);
+  padding: calc(var(--u) * 1.3) calc(var(--u) * 2.6);
+  font: inherit;
+  font-size: calc(var(--u) * 1.8);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.nav-item.on { color: var(--ink); border-color: var(--ice); }

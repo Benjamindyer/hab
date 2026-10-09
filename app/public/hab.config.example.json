@@ -1,0 +1,26 @@
+{
+  "personality": {
+    "humour": 60,
+    "honesty": 75,
+    "name": "Assistant"
+  },
+  "ambient": {
+    "room": "Kitchen",
+    "weather": "weather.forecast_home",
+    "climate": "climate.kitchen"
+  },
+  "satellite": "assist_satellite.kitchen",
+  "music": {
+    "player": "media_player.spotify_your_name",
+    "room": "kitchen",
+    "favourites": [
+      {
+        "name": "Morning playlist",
+        "uri": "spotify:playlist:REPLACE_ME"
+      }
+    ]
+  },
+  "llm": {
+    "personality": "ai_task.your_model"
+  }
+}

@@ -1,0 +1,81 @@
+/* Now playing */
+#s-music .art-frame {
+  position: absolute; left: 18vw; top: 9vh; width: 40vmin; height: 40vmin;
+  border: 1px solid #2b2f35; background: linear-gradient(135deg, #12151a, #0a0b0e); overflow: hidden;
+}
+#s-music .art-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+#s-music .info {
+  position: absolute; left: calc(18vw + 40vmin + 3vw); right: 6vw; top: 9vh; height: 40vmin; min-width: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+#s-music .src { color: var(--dim); font-size: calc(var(--u) * 1.6); letter-spacing: 0.3em; text-transform: uppercase; }
+#s-music .info > div { min-width: 0; }
+#s-music .ttl { font-weight: 200; font-size: min(calc(var(--u) * 5.2), 4.4vw); line-height: 1.1; margin-top: 1vmin; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+#s-music .artist { color: var(--dim); font-weight: 300; font-size: min(calc(var(--u) * 2.8), 2.4vw); margin-top: 1vmin; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#s-music .prog { position: relative; height: calc(var(--u) * 0.7); background: #23262b; }
+#s-music .prog b { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ice); }
+#s-music .times { display: flex; justify-content: space-between; color: var(--dim); font-size: calc(var(--u) * 1.7); margin-top: 1vmin; }
+#s-music .tr { display: flex; gap: 1.4vw; margin-top: 2vmin; align-items: center; }
+
+.ic {
+  width: calc(var(--u) * 9); height: calc(var(--u) * 9); border: 1px solid #3a3e44; background: transparent;
+  color: var(--ink); cursor: pointer; display: grid; place-items: center;
+}
+.ic.main { width: calc(var(--u) * 12); height: calc(var(--u) * 12); border-color: var(--ice); }
+.ic:active { background: #ffffff14; }
+.ic svg { width: 42%; height: 42%; fill: currentColor; }
+
+#s-music .vol { position: absolute; left: 18vw; right: 6vw; top: calc(9vh + 40vmin + 4vh); display: flex; align-items: center; gap: 2vw; }
+#s-music .vol .k { color: var(--dim); font-size: calc(var(--u) * 1.6); letter-spacing: 0.3em; text-transform: uppercase; }
+#s-music .bars { flex: 1; display: flex; gap: 0.5vmin; height: calc(var(--u) * 5); align-items: flex-end; cursor: pointer; }
+#s-music .bars i { flex: 1; background: #23262b; }
+#s-music .bars i.on { background: var(--ice); }
+
+/* Pager */
+.pager { position: absolute; inset: 0; }
+.pager-track { position: absolute; inset: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.pager-track::-webkit-scrollbar { display: none; }
+.page { flex: 0 0 100%; scroll-snap-align: start; position: relative; overflow: hidden; }
+.pager-tabs { position: absolute; left: 50%; top: 2.6vh; transform: translateX(-50%); display: flex; gap: 3vmin; z-index: 3; }
+.pager-tab { background: none; border: 0; border-bottom: 1px solid transparent; color: var(--dim); font: inherit; font-size: calc(var(--u) * 1.6); letter-spacing: 0.28em; text-transform: uppercase; padding: 0.8vmin 0.2vmin; cursor: pointer; }
+.pager-tab.on { color: var(--ink); border-bottom-color: var(--ice); }
+
+/* Speakers page */
+.speakers { padding: 11vh 6vw 14vh 18vw; overflow-y: auto; scrollbar-width: none; }
+.speakers::-webkit-scrollbar { display: none; }
+.where-label, .page-title { color: var(--dim); font-size: calc(var(--u) * 1.6); letter-spacing: 0.3em; text-transform: uppercase; }
+.where-name { font-weight: 200; font-size: min(calc(var(--u) * 9), 7.4vw); line-height: 1.05; margin: 0.8vmin 0 3vmin; }
+.speakers .rooms { display: grid; gap: 1.4vmin; grid-template-columns: repeat(auto-fill, minmax(24vmin, 1fr)); }
+
+/* Library page */
+.library-page { padding: 11vh 6vw 20vh 18vw; min-height: 0; display: flex; flex-direction: column; gap: 1.6vh; }
+.where-chip { align-self: flex-start; background: transparent; border: 1px solid #3a3e44; color: var(--ink); font: inherit; font-weight: 300; font-size: min(calc(var(--u) * 2.2), 1.9vw); padding: calc(var(--u) * 1.1) calc(var(--u) * 2.2); cursor: pointer; }
+
+.tile {
+  position: relative; text-align: left; color: var(--ink); font: inherit; cursor: pointer;
+  border: 1px solid var(--faint); background: linear-gradient(180deg, #0f1115, #0a0b0e);
+  padding: calc(var(--u) * 2) calc(var(--u) * 2.2); min-height: 13vmin;
+  display: flex; flex-direction: column; justify-content: space-between; transition: border-color 0.3s, background 0.3s;
+}
+.tile-name { padding-right: 4vmin; font-weight: 300; font-size: min(calc(var(--u) * 3), 2.5vw); }
+.tile-kind { color: var(--dim); font-size: min(calc(var(--u) * 1.2), 1vw); letter-spacing: 0.22em; text-transform: uppercase; margin-top: 0.6vmin; }
+.tile .eq { position: absolute; right: 1.4vmin; top: 1.4vmin; display: flex; gap: 3px; align-items: flex-end; height: calc(var(--u) * 2.4); }
+.tile .eq i { width: 4px; height: 35%; background: #2b2f35; }
+.tile.on { border-color: var(--ice); background: linear-gradient(180deg, #151c22, #0b0e12); box-shadow: 0 0 calc(var(--u) * 3) #cfe3ee22; }
+.tile.on .eq i { background: var(--ice); height: 90%; }
+.tile.on .eq i:nth-child(2) { height: 55%; }
+.tile.on .eq i:nth-child(3) { height: 75%; }
+
+.library { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.library::-webkit-scrollbar { display: none; }
+.library .grid { display: grid; gap: 1.2vmin; grid-template-columns: repeat(auto-fill, minmax(19vmin, 1fr)); padding-bottom: 4vh; }
+.pl { position: relative; aspect-ratio: 1; border: 1px solid #2b2f35; padding: 0; overflow: hidden; cursor: pointer; color: var(--ink); font: inherit; text-align: left; background: #0f1115; }
+.pl img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pl::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, #000c); }
+.pl-name { position: absolute; z-index: 1; left: 1.4vmin; right: 1.4vmin; bottom: 1.2vmin; font-weight: 300; font-size: min(calc(var(--u) * 2), 1.7vw); line-height: 1.2; text-shadow: 0 1px 6px #000a; }
+.pl:active { opacity: 0.8; }
+#s-music .empty { color: var(--dim); font-weight: 300; font-size: min(calc(var(--u) * 2.2), 1.9vw); padding: 1vh 0; }
+
+#s-music .note { position: absolute; z-index: 2; pointer-events: none; left: 18vw; right: 6vw; bottom: 8vh; font-size: calc(var(--u) * 2.6); font-weight: 300; min-height: 1.4em; }
+

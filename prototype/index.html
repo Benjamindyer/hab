@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HAB prototype</title>
+<style>
+  :root{
+    --bg:#06070a; --panel:#0c0e12; --ink:#ebe8df; --dim:#6d7177; --faint:#23262b;
+    --amber:#ffb14a; --ice:#cfe3ee;
+    --u:1vmin;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  #stage{position:fixed;inset:0;}
+  /* faint starfield + grid */
+  #stage::before{content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(1px 1px at 12% 22%,#fff6 50%,transparent 51%),
+      radial-gradient(1px 1px at 78% 14%,#fff5 50%,transparent 51%),
+      radial-gradient(1px 1px at 63% 71%,#fff4 50%,transparent 51%),
+      radial-gradient(1px 1px at 31% 83%,#fff5 50%,transparent 51%),
+      radial-gradient(1px 1px at 91% 58%,#fff4 50%,transparent 51%),
+      radial-gradient(1px 1px at 45% 38%,#fff3 50%,transparent 51%);
+    opacity:.7}
+  #stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 3px);mix-blend-mode:screen}
+  .scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .6s ease}
+  body[data-scene="ambient"] #s-ambient,
+  body[data-scene="listening"] #s-voice,
+  body[data-scene="thinking"] #s-voice,
+  body[data-scene="speaking"] #s-voice,
+  body[data-scene="home"] #s-home,
+  body[data-scene="music"] #s-music,
+  body[data-scene="power"] #s-power,
+  body[data-scene="timers"] #s-timers,
+  body[data-scene="ringing"] #s-timers{opacity:1;pointer-events:auto}
+
+  /* THE SLAB (the character) */
+  #slab{position:absolute;display:flex;gap:calc(var(--u)*.45);
+    transition:all .9s cubic-bezier(.2,.8,.2,1);}
+  #slab i{display:block;flex:1;background:linear-gradient(180deg,#d9d6cc 0%,#8c8a84 55%,#4a4a47 100%);
+    border-radius:calc(var(--u)*.3);position:relative;
+    box-shadow:0 0 calc(var(--u)*3) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
+    transition:height .12s linear, transform .35s ease, filter .4s}
+  #slab i::after{content:"";position:absolute;left:12%;right:12%;top:6%;height:1px;background:#0006}
+  body[data-scene="ambient"] #slab{left:6vw;bottom:15vh;width:7.5vmin;height:16vmin;align-items:flex-end}
+  body[data-scene="timers"] #slab,body[data-scene="power"] #slab,body[data-scene="music"] #slab,body[data-scene="home"] #slab,body[data-scene="ringing"] #slab{left:6vw;top:8vh;width:7.5vmin;height:16vmin;align-items:flex-end}
+  body[data-scene="listening"] #slab,body[data-scene="thinking"] #slab,body[data-scene="speaking"] #slab{
+    left:50%;top:34vh;transform:translate(-50%,-50%);width:34vmin;height:44vmin;align-items:center}
+  body[data-scene="ringing"] #slab i{filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.1)}
+  /* state light on slab */
+  #eye{position:absolute;left:50%;bottom:-3.2vmin;width:calc(var(--u)*5);height:2px;transform:translateX(-50%);
+    background:var(--ice);box-shadow:0 0 12px var(--ice);opacity:.35;transition:all .4s}
+  body[data-scene="listening"] #eye{opacity:1;width:calc(var(--u)*22)}
+  body[data-scene="thinking"] #eye{opacity:1;animation:scan 1.1s ease-in-out infinite alternate}
+  body[data-scene="speaking"] #eye{opacity:1;width:calc(var(--u)*14);background:var(--ink);box-shadow:0 0 14px #fff}
+  body[data-scene="ringing"] #eye{background:var(--amber);box-shadow:0 0 16px var(--amber);opacity:1;width:calc(var(--u)*5)}
+  @keyframes scan{from{width:calc(var(--u)*4);}to{width:calc(var(--u)*26);}}
+
+  /* AMBIENT */
+  #s-ambient .clock{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+    font-weight:100;letter-spacing:.02em;font-size:calc(var(--u)*30);line-height:1;white-space:nowrap}
+  #s-ambient .date{position:absolute;left:50%;top:58%;transform:translateX(-50%);
+    color:var(--dim);font-size:calc(var(--u)*2.6);letter-spacing:.38em;text-transform:uppercase;white-space:nowrap}
+  #s-ambient .note{position:absolute;left:50%;bottom:15vh;transform:translateX(-50%);width:min(70vw,120vmin);
+    text-align:center;font-size:calc(var(--u)*3.1);font-weight:300;line-height:1.35;min-height:2.8em}
+  #s-ambient .note b{font-weight:300;color:var(--ice)}
+  .readout{position:absolute;top:6vh;font-size:calc(var(--u)*1.9);letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+  .readout strong{display:block;color:var(--ink);font-weight:300;font-size:calc(var(--u)*4.2);letter-spacing:.02em;margin-top:.5vmin}
+  .r-left{left:6vw}.r-right{right:6vw;text-align:right}
+
+  /* VOICE */
+  #s-voice .heard{position:absolute;left:50%;bottom:30vh;transform:translateX(-50%);width:min(78vw,130vmin);text-align:center;
+    color:var(--dim);font-size:calc(var(--u)*3);font-weight:300;min-height:1.4em}
+  #s-voice .reply{position:absolute;left:50%;bottom:15vh;transform:translateX(-50%);width:min(78vw,130vmin);text-align:center;
+    font-size:calc(var(--u)*4);font-weight:300;line-height:1.3;min-height:2.6em}
+  #s-voice .label{position:absolute;left:50%;bottom:37vh;transform:translateX(-50%);font-size:calc(var(--u)*1.8);
+    letter-spacing:.5em;text-transform:uppercase;color:var(--ice)}
+
+  /* TIMERS */
+  #s-timers .row{position:absolute;left:18vw;right:6vw;top:8vh;bottom:36vh;display:flex;gap:2.2vw}
+  .tm{flex:1;min-width:0;border:1px solid var(--faint);background:linear-gradient(180deg,#0f1115,#0a0b0e);position:relative;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;transition:border-color .3s}
+  .tm .nm{position:absolute;top:2.6vmin;left:3vmin;font-size:calc(var(--u)*1.9);letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+  .tm .t{font-weight:100;font-size:min(calc(var(--u)*21),calc(7.5vw));line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .tm .bar{position:absolute;left:0;bottom:0;height:calc(var(--u)*.7);background:var(--ice);transition:width .5s linear}
+  .tm .x{position:absolute;top:2vmin;right:2.4vmin;color:var(--dim);font-size:calc(var(--u)*3);cursor:pointer;background:none;border:0}
+  .tm.ring{border-color:var(--amber);animation:blink 1s steps(2,jump-none) infinite}
+  .tm.ring .t{color:var(--amber)}
+  .tm.ring .bar{background:var(--amber);width:100%!important}
+  @keyframes blink{50%{background:#2a1c08}}
+  #s-timers .quick{position:absolute;left:18vw;right:6vw;bottom:14vh;flex-wrap:wrap;display:flex;gap:1.6vw;align-items:center}
+  #s-timers .quick .lbl{color:var(--dim);letter-spacing:.3em;text-transform:uppercase;font-size:calc(var(--u)*1.8);margin-right:1vw}
+  .btn{flex:0 0 auto;min-width:calc(var(--u)*11);padding:calc(var(--u)*1.8) calc(var(--u)*2.4);border:1px solid #3a3e44;
+    background:transparent;color:var(--ink);font-size:calc(var(--u)*3);font-weight:300;cursor:pointer;letter-spacing:.05em}
+  .btn:active{background:#ffffff14}
+  .btn.big{flex:1;border-color:var(--amber);color:var(--amber);font-size:calc(var(--u)*4.4);display:none}
+  body[data-scene="ringing"] .btn.big{display:block}
+  body[data-scene="ringing"] .quick .lbl,body[data-scene="ringing"] .quick .btn:not(.big){display:none}
+  #s-timers .note{position:absolute;left:18vw;right:6vw;bottom:27vh;font-size:calc(var(--u)*2.6);color:var(--dim);font-weight:300;min-height:1.5em}
+  body[data-scene="ringing"] #s-timers .note{color:var(--ink)}
+
+
+  /* POWER */
+  #s-power svg{position:absolute;left:18vw;right:4vw;top:5vh;width:78vw;height:50vh;overflow:visible}
+  .nd rect{fill:#0c0e12;stroke:#2b2f35;stroke-width:1}
+  .nd .k{fill:#6d7177;font:300 15px ui-monospace,Menlo,monospace;letter-spacing:.25em}
+  .nd .v{fill:#ebe8df;font:100 46px ui-monospace,Menlo,monospace}
+  .nd .u{fill:#6d7177;font:300 18px ui-monospace,Menlo,monospace}
+  .fl{fill:none;stroke:#cfe3ee;stroke-width:2;stroke-dasharray:6 10;animation:flow 1.1s linear infinite;opacity:.9}
+  .fl.rev{animation-direction:reverse}
+  .fl.off{animation:none;stroke:#2b2f35;opacity:1}
+  @keyframes flow{to{stroke-dashoffset:-32}}
+  #s-power .strip{position:absolute;left:18vw;right:6vw;bottom:25vh;height:17vh;display:flex;gap:1.6vw}
+  .pn{flex:1;min-width:0;border:1px solid var(--faint);background:linear-gradient(180deg,#0f1115,#0a0b0e);position:relative;
+    padding:calc(var(--u)*1.6) calc(var(--u)*2);display:flex;flex-direction:column;justify-content:space-between;white-space:nowrap;overflow:hidden}
+  .pn .k{color:var(--dim);font-size:calc(var(--u)*1.5);letter-spacing:.22em;text-transform:uppercase}
+  .pn .big{font-weight:100;font-size:min(calc(var(--u)*7.2),4.6vw);line-height:1;letter-spacing:-.04em;overflow:hidden}
+  .pn .big small{font-size:min(calc(var(--u)*2),1.5vw);color:var(--dim);margin-left:.8vmin;letter-spacing:.05em}
+  .pn .sub{color:var(--dim);font-size:min(calc(var(--u)*1.5),1.25vw);letter-spacing:.08em;text-transform:uppercase}
+  .ticks{display:flex;gap:1px;height:calc(var(--u)*2.2);align-items:flex-end;position:relative}
+  .ticks i{flex:1;background:#2b2f35;height:45%}
+  .ticks i.on{background:var(--ice);height:100%}
+  .ticks i.now{background:var(--amber);height:140%;position:relative;z-index:2}
+  .hist i{background:#3a3f46}
+  .hist i.hi{background:var(--ice)}
+  .gauge{height:calc(var(--u)*.7);background:#23262b;position:relative}
+  .gauge b{position:absolute;left:0;top:0;bottom:0;background:var(--ice)}
+  .seg{display:flex;gap:calc(var(--u)*.6);height:calc(var(--u)*4)}
+  .seg i{flex:1;background:linear-gradient(180deg,#d9d6cc,#6b6a66);opacity:.95}
+  .seg i.e{background:#23262b;opacity:1}
+  #s-power .note{position:absolute;left:18vw;right:6vw;bottom:16vh;font-size:calc(var(--u)*2.8);font-weight:300;min-height:1.4em}
+  /* demo bar */
+
+  /* NOW PLAYING */
+  #s-music .glow{position:absolute;left:0;right:0;top:0;bottom:0;transition:background 1.2s;
+    background:radial-gradient(60vmin 50vmin at 38vmin 40vh,hsl(var(--h,200) 55% 30% / .45),transparent 70%)}
+  #art{position:absolute;left:18vw;top:9vh;width:38vmin;height:38vmin;border:1px solid #2b2f35;box-shadow:0 0 6vmin hsl(var(--h,200) 60% 40% / .35)}
+  #s-music .info{position:absolute;left:calc(18vw + 38vmin + 3vw);right:6vw;top:9vh;height:38vmin;display:flex;flex-direction:column;justify-content:space-between}
+  #s-music .src{color:var(--dim);font-size:calc(var(--u)*1.6);letter-spacing:.3em;text-transform:uppercase}
+  #s-music .ttl{font-weight:200;font-size:min(calc(var(--u)*6.2),5.2vw);line-height:1.08;margin-top:1vmin}
+  #s-music .art{color:var(--dim);font-weight:300;font-size:min(calc(var(--u)*3),2.6vw);margin-top:1.2vmin}
+  #s-music .prog{position:relative;height:calc(var(--u)*.7);background:#23262b;margin-top:auto}
+  #s-music .prog b{position:absolute;left:0;top:0;bottom:0;background:var(--ice);transition:width 1s linear}
+  #s-music .times{display:flex;justify-content:space-between;color:var(--dim);font-size:calc(var(--u)*1.7);margin-top:1vmin}
+  #s-music .tr{display:flex;gap:1.4vw;margin-top:2vmin;align-items:center}
+  .ic{width:calc(var(--u)*9);height:calc(var(--u)*9);border:1px solid #3a3e44;background:transparent;color:var(--ink);cursor:pointer;display:grid;place-items:center}
+  .ic.main{width:calc(var(--u)*12);height:calc(var(--u)*12);border-color:var(--ice)}
+  .ic:active{background:#ffffff14}
+  .ic svg{width:42%;height:42%;fill:currentColor}
+  #s-music .vol{position:absolute;left:18vw;right:6vw;top:calc(9vh + 38vmin + 4vh);display:flex;align-items:center;gap:2vw}
+  #s-music .vol .k{color:var(--dim);font-size:calc(var(--u)*1.6);letter-spacing:.3em;text-transform:uppercase;white-space:nowrap}
+  #s-music .vol .bars{flex:1;display:flex;gap:.5vmin;height:calc(var(--u)*5);align-items:flex-end;cursor:pointer}
+  #s-music .vol .bars i{flex:1;background:#23262b}
+  #s-music .vol .bars i.on{background:var(--ice)}
+  #s-music .note{position:absolute;left:18vw;right:6vw;bottom:16vh;font-size:calc(var(--u)*2.8);font-weight:300;min-height:1.4em}
+
+
+  /* MUSIC ROOMS */
+  #s-music .rooms{position:absolute;left:18vw;right:6vw;top:calc(9vh + 38vmin + 14vh);display:flex;gap:1vw}
+  .rm{flex:1;min-width:0;border:1px solid var(--faint);background:linear-gradient(180deg,#0f1115,#0a0b0e);padding:1.3vmin 1.5vmin;
+    cursor:pointer;color:var(--ink);text-align:left;font:inherit;display:flex;flex-direction:column;gap:1.2vmin;transition:border-color .3s}
+  .rm .n{font-weight:300;font-size:min(calc(var(--u)*2.3),1.9vw);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rm .s{color:var(--dim);font-size:min(calc(var(--u)*1.3),1.1vw);letter-spacing:.14em;text-transform:uppercase}
+  .rm .eq{display:flex;gap:3px;height:calc(var(--u)*2.4);align-items:flex-end}
+  .rm .eq i{width:4px;background:#2b2f35;height:25%}
+  .rm.on{border-color:var(--ice)}
+  .rm.on .eq i{background:var(--ice);animation:eq .9s ease-in-out infinite alternate}
+  .rm.on .eq i:nth-child(2){animation-delay:-.3s}.rm.on .eq i:nth-child(3){animation-delay:-.6s}.rm.on .eq i:nth-child(4){animation-delay:-.15s}
+  #s-music.paused .rm.on .eq i{animation:none;height:45%}
+  @keyframes eq{from{height:20%}to{height:100%}}
+  .grp{background:transparent;border:1px solid #3a3e44;color:var(--dim);padding:.8vmin 1.6vmin;cursor:pointer;font:inherit;
+    font-size:calc(var(--u)*1.5);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+  .grp.on{border-color:var(--ice);color:var(--ink)}
+
+  /* HOME */
+  #s-home .rl{position:absolute;left:18vw;top:7vh;width:19vw;display:flex;flex-direction:column;gap:.4vh}
+  .rb{text-align:left;background:none;border:0;border-left:2px solid #23262b;color:var(--dim);cursor:pointer;
+    padding:.9vmin 0 .9vmin 1.8vmin;font:inherit}
+  .rb b{display:block;font-weight:200;font-size:min(calc(var(--u)*3.6),3.1vw);color:inherit}
+  .rb small{display:block;font-size:min(calc(var(--u)*1.4),1.15vw);letter-spacing:.14em;text-transform:uppercase;margin-top:.3vmin}
+  .rb.on{color:var(--ink);border-color:var(--ice)}
+  .rb.lit small{color:var(--ice)}
+  #s-home .lc{position:absolute;left:40vw;top:7vh;width:9vw;height:46vh;display:flex;flex-direction:column}
+  #s-home .lc .k,#s-home .sc .k,#s-home .ht .k{color:var(--dim);font-size:calc(var(--u)*1.5);letter-spacing:.3em;text-transform:uppercase}
+  #s-home .lc .pc{font-weight:100;font-size:min(calc(var(--u)*6),5vw);line-height:1.1;margin:.6vmin 0 1.2vmin}
+  #s-home .lc .col{flex:1;display:flex;flex-direction:column-reverse;gap:.5vmin;cursor:pointer}
+  #s-home .lc .col i{flex:1;background:#1c1f24;border-radius:1px;transition:background .25s}
+  #s-home .lc .col i.on{background:linear-gradient(90deg,#d9d6cc,#8c8a84)}
+  #s-home .lc .tg{white-space:nowrap;margin-top:1.2vmin;background:transparent;border:1px solid #3a3e44;color:var(--ink);padding:.9vmin;cursor:pointer;font:inherit;
+    font-size:calc(var(--u)*1.6);letter-spacing:.2em;text-transform:uppercase}
+  #s-home .sc{position:absolute;left:54vw;right:6vw;top:7vh}
+  #s-home .sc .grid{display:grid;grid-template-columns:1fr 1fr;gap:.9vmin;margin-top:1vmin}
+  .sb{background:linear-gradient(180deg,#0f1115,#0a0b0e);border:1px solid var(--faint);color:var(--ink);padding:1.1vmin 1.4vmin;cursor:pointer;
+    font:inherit;font-weight:300;font-size:min(calc(var(--u)*2.1),1.7vw);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sb.on{border-color:var(--ice);color:#fff}
+  #s-home .ht{position:absolute;left:54vw;right:6vw;top:calc(7vh + 27vh);border:1px solid var(--faint);padding:1.4vmin 1.8vmin;
+    background:linear-gradient(180deg,#0f1115,#0a0b0e);display:flex;align-items:center;justify-content:space-between;gap:1vw;min-height:15vh}
+  #s-home .ht .t{font-weight:100;font-size:min(calc(var(--u)*8),6.4vw);line-height:1}
+  #s-home .ht .tg2{color:var(--dim);font-size:min(calc(var(--u)*1.7),1.4vw);letter-spacing:.14em;text-transform:uppercase;margin-top:.8vmin}
+  #s-home .ht .pm{display:flex;flex-direction:column;gap:.8vmin}
+  #s-home .ht .pm button{width:calc(var(--u)*6.5);height:calc(var(--u)*6.5);background:transparent;border:1px solid #3a3e44;color:var(--ink);font-size:calc(var(--u)*3.4);cursor:pointer;font-weight:200}
+  #s-home .bt{position:absolute;left:18vw;right:6vw;top:60vh;display:flex;gap:1.2vw}
+  #s-home .bt .btn{min-width:0;flex:1;font-size:min(calc(var(--u)*2.4),2vw);padding:calc(var(--u)*1.6) calc(var(--u)*1.2)}
+  #s-home .note{position:absolute;left:18vw;right:6vw;bottom:16vh;font-size:calc(var(--u)*2.8);font-weight:300;min-height:1.4em}
+
+  /* demo bar (not part of the product) */
+  #demo{position:fixed;left:0;right:0;bottom:0;z-index:9;display:flex;gap:.6vmin;justify-content:center;flex-wrap:wrap;
+    padding:1vmin;background:#000c;font-size:calc(var(--u)*1.6);align-items:center}
+  #demo button{background:#15171b;border:1px solid #2c3036;color:#b9bcc0;padding:.8vmin 1.6vmin;cursor:pointer;font:inherit}
+  #demo button.on{border-color:var(--ice);color:#fff}
+  #demo label{color:#9a9ea3;display:flex;gap:.6vmin;align-items:center;margin-left:2vmin}
+  #demo input{width:12vmin}
+  #demo .tag{color:#666;margin-right:1vmin;letter-spacing:.2em;text-transform:uppercase}
+</style>
+</head>
+<body data-scene="ambient">
+<div id="stage">
+  <div id="slab"><i></i><i></i><i></i><i></i><div id="eye"></div></div>
+
+  <section class="scene" id="s-ambient">
+    <div class="readout r-left" style="left:19vw"><span>Kitchen</span><strong class="mono">22.0°</strong></div>
+    <div class="readout r-right"><span>Outside</span><strong class="mono">11° rain</strong></div>
+    <div class="clock mono" id="clock">--:--</div>
+    <div class="date" id="date"></div>
+    <div class="note" id="ambientNote"></div>
+  </section>
+
+  <section class="scene" id="s-voice">
+    <div class="label" id="vlabel"></div>
+    <div class="heard" id="heard"></div>
+    <div class="reply" id="reply"></div>
+  </section>
+
+  <section class="scene" id="s-home">
+    <div class="rl" id="hrooms"></div>
+    <div class="lc"><span class="k">Light</span><div class="pc mono" id="hpc">0%</div><div class="col" id="hcol"></div><button class="tg" id="htg">Turn on</button></div>
+    <div class="sc"><span class="k">Scenes</span><div class="grid" id="hscenes"></div></div>
+    <div class="ht mono"><div><span class="k">Heating</span><div class="t" id="htemp">--</div><div class="tg2" id="htgt"></div></div>
+      <div class="pm"><button id="hup" aria-label="Warmer">+</button><button id="hdn" aria-label="Cooler">−</button></div></div>
+    <div class="bt"><button class="btn" id="alloff">All lights off</button><button class="btn" id="goodnight">Goodnight</button><button class="btn" id="leaving">Leaving</button></div>
+    <div class="note" id="homeNote"></div>
+  </section>
+
+  <section class="scene" id="s-music">
+    <div class="glow" id="glow"></div>
+    <canvas id="art" width="600" height="600"></canvas>
+    <div class="info">
+      <div><div class="src" id="msrc">Kitchen · Spotify</div>
+        <div class="ttl" id="mttl"></div><div class="art" id="mart"></div></div>
+      <div>
+        <div class="prog"><b id="mprog"></b></div>
+        <div class="times mono"><span id="mpos">0:00</span><span id="mdur">0:00</span></div>
+        <div class="tr">
+          <button class="ic" id="mprev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+          <button class="ic main" id="mplay" aria-label="Play or pause"></button>
+          <button class="ic" id="mnext" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l11 7L4 19z"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="vol"><span class="k">Volume</span><div class="bars" id="mvol"></div><button class="grp" id="grp">Group: off</button></div>
+    <div class="rooms" id="mrooms"></div>
+    <div class="note" id="musicNote"></div>
+  </section>
+
+  <section class="scene" id="s-power">
+    <svg viewBox="0 0 1000 440" preserveAspectRatio="xMidYMid meet">
+      <path class="fl" d="M190 90 H400 V190"/>
+      <path class="fl rev" d="M810 90 H600 V190"/>
+      <path class="fl off" d="M190 350 H400 V250"/>
+      <path class="fl" d="M810 350 H600 V250" style="animation-duration:2.6s"/>
+      <g class="nd"><rect x="0" y="30" width="190" height="120"/><text class="k" x="16" y="60">SOLAR</text><text class="v" x="16" y="118">0.1</text><text class="u" x="105" y="118">kW</text></g>
+      <g class="nd"><rect x="810" y="30" width="190" height="120"/><text class="k" x="826" y="60">GRID IN</text><text class="v" x="826" y="118">2.6</text><text class="u" x="915" y="118">kW</text></g>
+      <g class="nd"><rect x="0" y="290" width="190" height="120"/><text class="k" x="16" y="320">BATTERY</text><text class="v" x="16" y="378">62</text><text class="u" x="78" y="378">% idle</text></g>
+      <g class="nd"><rect x="810" y="290" width="190" height="120"/><text class="k" x="826" y="320">CAR</text><text class="v" x="826" y="378">0.1</text><text class="u" x="915" y="378">kW</text></g>
+      <g class="nd"><rect x="400" y="170" width="200" height="100" style="stroke:#cfe3ee66"/><text class="k" x="416" y="198">HOUSE</text><text class="v" x="416" y="250">2.7</text><text class="u" x="508" y="250">kW</text></g>
+    </svg>
+    <div class="strip">
+      <div class="pn mono"><span class="k">Rate now</span>
+        <span class="big">28.9<small>p</small></span>
+        <div class="ticks" id="rateTicks"></div><span class="sub">Off-peak 23:30</span></div>
+      <div class="pn mono"><span class="k">Used today</span>
+        <span class="big">£3.94</span>
+        <div class="ticks hist" id="histTicks"></div><span class="sub">21.6 kWh</span></div>
+      <div class="pn mono"><span class="k">Solar left</span>
+        <span class="big">1.8<small>kWh</small></span>
+        <div class="gauge"><b style="width:47%"></b></div><span class="sub">of 3.8 today</span></div>
+      <div class="pn mono"><span class="k">Car</span>
+        <span class="big" style="font-size:min(calc(var(--u)*4),3.4vw);padding-top:.8vmin">Parked</span>
+        <div class="seg"><i></i><i></i><i></i><i class="e"></i></div><span class="sub">72% · idle</span></div>
+    </div>
+    <div class="note" id="powerNote"></div>
+  </section>
+
+  <section class="scene" id="s-timers">
+    <div class="row" id="timerRow"></div>
+    <div class="note" id="timerNote"></div>
+    <div class="quick">
+      <span class="lbl">Timer</span>
+      <button class="btn" data-add="60">1 min</button>
+      <button class="btn" data-add="300">5 min</button>
+      <button class="btn" data-add="600">10 min</button>
+      <button class="btn" data-add="900">15 min</button>
+      <button class="btn big" id="silence">Silence</button>
+    </div>
+  </section>
+</div>
+
+<div id="demo">
+  <span class="tag">prototype · fake data</span>
+  <button data-go="ambient" class="on">1 Ambient</button>
+  <button data-go="listening">2 Listening</button>
+  <button data-go="thinking">3 Thinking</button>
+  <button data-go="speaking">4 Speaking</button>
+  <button data-go="timers">5 Timers</button>
+  <button data-go="ringing">6 Ringing</button>
+  <button data-go="power">7 Power</button>
+  <button data-go="music">8 Music</button>
+  <button data-go="home">9 Home</button>
+  <button id="ask">▶ Ask the assistant</button>
+  <label>Humour <input type="range" id="humour" min="0" max="100" value="60"><span id="hv">60</span></label>
+  <label>Honesty <input type="range" id="honesty" min="0" max="100" value="75"><span id="ov">75</span></label>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let scene='ambient', t0=performance.now();
+
+/* ---- personality: 4 voices picked by the two dials ---- */
+const LINES={
+  // [humour>=50][honesty>=50]
+  ambient:{
+    '00':'Good evening. Heating is on.',
+    '01':'Heating has been on for six hours. The kitchen window has been open for four.',
+    '10':'Good evening. The house is quiet. Suspiciously so.',
+    '11':'The heating has been on for six hours with the window open. I’m not judging. I’m a slab.'
+  },
+  power:{
+    '00':'Drawing 2.7 kilowatts from the grid.',
+    '01':'Using 2.7 kilowatts, almost all from the grid. Solar is giving 0.1.',
+    '10':'2.7 kilowatts. The house is thirsty.',
+    '11':'2.7 kilowatts, and the sun is contributing 0.1 of it. It is raining. I did warn you.'
+  },
+  music:{
+    '00':'Playing in the kitchen.',
+    '01':'Playing in the kitchen. This is the fourth time today.',
+    '10':'Playing in the kitchen. Bold choice.',
+    '11':'Fourth play today. I\u2019m not saying it\u2019s too many. The numbers are saying it.'
+  },
+  home:{
+    '00':'{r}: {l}, {t} degrees, heating target {g}.',
+    '01':'{r} is {t} degrees against a target of {g}. {h}',
+    '10':'{r}: {l}. {t} degrees. Perfectly civilised.',
+    '11':'{r} is {t} degrees against a target of {g}. {h} {j}'
+  },
+  heard:'“How long is left on the pasta?”',
+  reply:{
+    '00':'Eight minutes, forty-two seconds.',
+    '01':'Eight minutes forty-two. It will not be ready sooner.',
+    '10':'Eight minutes forty-two. Pasta is a patient art.',
+    '11':'Eight forty-two. It will not cook faster if you stare at it. I’ve checked.'
+  },
+  ring:{
+    '00':'Timer finished.',
+    '01':'Pasta timer finished. It is overcooking as we speak.',
+    '10':'Time. The pasta has opinions.',
+    '11':'Pasta’s done. Every second you wait is a worse pasta. Your call.'
+  }
+};
+const key=()=>(+($('#humour').value>=50))+''+(+($('#honesty').value>=50));
+function refreshText(){
+  $('#hv').textContent=$('#humour').value; $('#ov').textContent=$('#honesty').value;
+  $('#ambientNote').textContent=LINES.ambient[key()];
+  $('#powerNote').textContent=LINES.power[key()];
+  $('#musicNote').textContent=LINES.music[key()];
+  if(typeof renderHome==='function')renderHome();
+  $('#timerNote').textContent = scene==='ringing' ? LINES.ring[key()] : '';
+}
+$('#humour').oninput=$('#honesty').oninput=()=>{refreshText(); if(scene==='speaking')typeReply(true)};
+
+/* ---- clock ---- */
+function tick(){
+  const d=new Date();
+  $('#clock').textContent=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  $('#date').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+}
+setInterval(tick,1000);tick();
+
+/* ---- timers ---- */
+let timers=[{id:1,name:'Pasta',total:600,left:522},{id:2,name:'Eggs',total:300,left:190}];
+let nid=3;
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+function renderTimers(){
+  const row=$('#timerRow');
+  row.innerHTML=timers.map(t=>`<div class="tm mono ${t.left<=0?'ring':''}" data-id="${t.id}">
+    <div class="nm">${t.name}</div><button class="x" data-x="${t.id}">×</button>
+    <div class="t">${fmt(t.left)}</div><div class="bar" style="width:${100*t.left/t.total}%"></div></div>`).join('')
+    || '<div class="tm"><div class="nm">No timers</div><div class="t" style="font-size:calc(var(--u)*6);color:#555">Say “set a timer”</div></div>';
+}
+setInterval(()=>{
+  timers.forEach(t=>{if(t.left>0)t.left-=1});
+  if(scene==='timers'&&timers.some(t=>t.left<=0))go('ringing');
+  renderTimers();
+},1000);
+$('#timerRow').onclick=e=>{const x=e.target.dataset.x; if(x){timers=timers.filter(t=>t.id!=x);renderTimers();if(!timers.some(t=>t.left<=0)&&scene==='ringing')go('timers')}};
+$$('[data-add]').forEach(b=>b.onclick=()=>{const s=+b.dataset.add;timers.push({id:nid++,name:s/60+' min',total:s,left:s});renderTimers()});
+$('#silence').onclick=()=>{timers=timers.filter(t=>t.left>0);renderTimers();go('timers')};
+
+/* ---- scenes ---- */
+const bars=$$('#slab i');
+function go(s){
+  scene=s;document.body.dataset.scene=s;
+  $$('#demo [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===s));
+  if(s==='ringing'){ if(!timers.some(t=>t.left<=0)){timers[0].left=0} renderTimers(); }
+  const L={listening:'Listening',thinking:'Thinking',speaking:'',};
+  $('#vlabel').textContent=L[s]||'';
+  if(s==='listening'){$('#heard').textContent='';$('#reply').textContent='';typeHeard();}
+  if(s==='thinking'){$('#heard').textContent=LINES.heard;$('#reply').textContent='';}
+  if(s==='speaking'){$('#heard').textContent=LINES.heard;typeReply();}
+  if(s==='timers'||s==='ringing')renderTimers();
+  refreshText();
+}
+let typing;
+function typeInto(el,text,speed,done){clearInterval(typing);el.textContent='';let i=0;
+  typing=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(typing);done&&done()}},speed)}
+function typeHeard(){typeInto($('#heard'),LINES.heard,55)}
+function typeReply(instant){const r=LINES.reply[key()];if(instant){$('#reply').textContent=r;return}typeInto($('#reply'),r,38)}
+$$('#demo [data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+$('#ask').onclick=()=>{go('listening');setTimeout(()=>go('thinking'),2400);setTimeout(()=>go('speaking'),4000);setTimeout(()=>go('ambient'),10500)};
+addEventListener('keydown',e=>{const m={1:'ambient',2:'listening',3:'thinking',4:'speaking',5:'timers',6:'ringing',7:'power',8:'music',9:'home'};if(m[e.key])go(m[e.key])});
+
+/* ---- slab animation ---- */
+(function loop(now){
+  const t=(now-t0)/1000;
+  bars.forEach((b,i)=>{
+    let h=1,ty=0;
+    if(scene==='ambient'||scene==='timers'||scene==='power'||scene==='home'){h=.96+.04*Math.sin(t*.7+i);}
+    else if(scene==='listening'){h=.35+.65*Math.abs(Math.sin(t*3.1+i*1.7)*Math.sin(t*1.3+i*.9));}
+    else if(scene==='thinking'){const k=Math.floor(t*2.4)%4;h=1;ty=(k===i)?-9:(Math.floor(t*2.4)%8>=4&&((k+2)%4===i)?9:0);}
+    else if(scene==='speaking'){h=.7+.3*Math.abs(Math.sin(t*5.2+i*.8)*Math.sin(t*2.1+i));}
+    else if(scene==='music'){h=playing?.72+.28*Math.abs(Math.sin(t*3.4+i*1.3)*Math.sin(t*1.7+i*.6)):.96;}
+    else if(scene==='ringing'){h=1;ty=Math.sin(t*14+i)*2;}
+    b.style.height=(h*100)+'%';b.style.transform=`translateY(${ty}%)`;
+  });
+  requestAnimationFrame(loop);
+})(performance.now());
+(function(){const r=$('#rateTicks'),h=$('#histTicks');const now=new Date();const nowIdx=now.getHours()*2+(now.getMinutes()>=30?1:0);
+  for(let i=0;i<48;i++){const e=document.createElement('i');if(i>=47||i<11)e.className='on';if(i===nowIdx)e.className='now';r.appendChild(e)}
+  const use=[2,2,2,2,2,2,2,3,4,6,7,6,5,4,4,4,5,6,8,9,8,6,4,3];
+  for(let i=0;i<24;i++){const e=document.createElement('i');e.style.height=(use[i]*11)+'%';if(use[i]>=7)e.className='hi';h.appendChild(e)}})();
+
+/* ---- now playing ---- */
+const TRACKS=[
+  {t:'Slow Orbit',a:'Cassini Hours',d:214,h:205},
+  {t:'Warm Static',a:'Kitchen Radio',d:187,h:28},
+  {t:'Long Way Round',a:'The Quiet Moons',d:243,h:285}];
+let ti=0,playing=true,pos=62,vol=3.5;
+const PLAY='<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>',PAUSE='<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+const mm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function drawArt(h){
+  const c=$('#art'),x=c.getContext('2d'),W=600;
+  const g=x.createLinearGradient(0,0,W,W);g.addColorStop(0,`hsl(${h} 45% 14%)`);g.addColorStop(1,`hsl(${(h+40)%360} 55% 38%)`);
+  x.fillStyle=g;x.fillRect(0,0,W,W);
+  x.strokeStyle='#ffffff22';x.lineWidth=2;
+  for(let i=1;i<9;i++){x.beginPath();x.arc(W*.62,W*.4,i*52,0,7);x.stroke()}
+  x.fillStyle=`hsl(${(h+160)%360} 70% 70% / .85)`;x.beginPath();x.arc(W*.62,W*.4,46,0,7);x.fill();
+  x.fillStyle='#0008';for(let i=0;i<4;i++){x.fillRect(60+i*26,W-190,18,130-i*14)}
+}
+function renderMusic(){
+  const T=TRACKS[ti];$('#mttl').textContent=T.t;$('#mart').textContent=T.a;
+  $('#mdur').textContent=mm(T.d);$('#mpos').textContent=mm(pos);
+  $('#mprog').style.width=(100*pos/T.d)+'%';$('#mplay').innerHTML=playing?PAUSE:PLAY;
+  document.documentElement.style.setProperty('--h',T.h);
+  $('#mvol').innerHTML=Array.from({length:12},(_,i)=>`<i class="${i<vol*2?'on':''}" style="height:${30+i*6}%" data-v="${i}"></i>`).join('');
+}
+function setTrack(n){ti=(n+TRACKS.length)%TRACKS.length;pos=0;drawArt(TRACKS[ti].h);renderMusic()}
+$('#mnext').onclick=()=>setTrack(ti+1);$('#mprev').onclick=()=>setTrack(ti-1);
+$('#mplay').onclick=()=>{playing=!playing;renderMusic()};
+$('#mvol').onclick=e=>{const v=e.target.dataset.v;if(v!==undefined){vol=(+v+1)/2;renderMusic()}};
+setInterval(()=>{if(playing){pos+=1;if(pos>=TRACKS[ti].d)setTrack(ti+1);else if(scene==='music'){$('#mpos').textContent=mm(pos);$('#mprog').style.width=(100*pos/TRACKS[ti].d)+'%'}}},1000);
+drawArt(TRACKS[0].h);renderMusic();
+
+/* ---- music rooms ---- */
+const MROOMS=['Kitchen','Lounge','Kids\u2019','Bedroom','Office'];
+let mset=new Set([0]),group=false;
+function renderRooms(){
+  $('#mrooms').innerHTML=MROOMS.map((n,i)=>`<button class="rm ${mset.has(i)?'on':''}" data-r="${i}"><span class="n">${n}</span>
+    <span class="eq"><i></i><i></i><i></i><i></i></span><span class="s">${mset.has(i)?(playing?'Playing':'Paused'):'Tap to play here'}</span></button>`).join('');
+  const names=[...mset].map(i=>MROOMS[i]);
+  $('#msrc').textContent=(names.length===MROOMS.length?'Everywhere':names.join(' + '))+' \u00B7 Spotify';
+  $('#grp').textContent='Group: '+(group?'on':'off');$('#grp').classList.toggle('on',group);
+  $('#s-music').classList.toggle('paused',!playing);
+}
+$('#mrooms').onclick=e=>{const b=e.target.closest('.rm');if(!b)return;const i=+b.dataset.r;
+  if(group){if(mset.has(i)&&mset.size>1)mset.delete(i);else mset.add(i)}else mset=new Set([i]);renderRooms()};
+$('#grp').onclick=()=>{group=!group;if(!group&&mset.size>1)mset=new Set([[...mset][0]]);renderRooms()};
+const _rm=renderMusic;renderMusic=function(){_rm();renderRooms()};
+renderMusic();
+
+/* ---- home (smart controls) ---- */
+const SCENES=[['Bright',100],['Concentrate',100],['Energize',100],['Read',85],['Relax',55],['Dimmed',30],['Nightlight',5],['Savanna sunset',60]];
+const HR=[
+  {n:'Kitchen',on:false,b:60,t:22.0,g:17.0,sc:null,live:true},
+  {n:'Lounge',on:true,b:60,t:19.5,g:20.0,sc:'Relax'},
+  {n:'Bedroom',on:true,b:100,t:18.5,g:16.0,sc:'Bright'},
+  {n:'Kids\u2019 room',on:false,b:50,t:19.0,g:18.0,sc:null},
+  {n:'Landing',on:false,b:40,t:null,g:null,sc:null},
+  {n:'Office',on:false,b:70,t:20.0,g:19.0,sc:null}];
+let hi=0;
+function renderHome(){
+  const R=HR[hi];if(!$('#hrooms'))return;
+  $('#hrooms').innerHTML=HR.map((r,i)=>`<button class="rb ${i===hi?'on':''} ${r.on?'lit':''}" data-i="${i}"><b>${r.n}</b>
+    <small>${r.on?'Light '+r.b+'%':'Light off'}${r.t!=null?' \u00B7 '+r.t.toFixed(1)+'\u00B0':''}</small></button>`).join('');
+  const lvl=R.on?Math.round(R.b/100*12):0;
+  $('#hcol').innerHTML=Array.from({length:12},(_,i)=>`<i class="${i<lvl?'on':''}" data-l="${i}"></i>`).join('');
+  $('#hpc').textContent=R.on?R.b+'%':'Off';$('#htg').textContent=R.on?'Turn off':'Turn on';
+  $('#hscenes').innerHTML=SCENES.map(([n])=>`<button class="sb ${R.on&&R.sc===n?'on':''}" data-s="${n}">${n}</button>`).join('');
+  if(R.t==null){$('#htemp').textContent='\u2014';$('#htgt').textContent='No heating here'}
+  else{$('#htemp').textContent=R.t.toFixed(1)+'\u00B0';$('#htgt').textContent='Target '+R.g.toFixed(1)+'\u00B0 \u00B7 '+(R.t>=R.g?'Idle':'Heating')}
+  const l=R.on?'light at '+R.b+'%':'light off',h=R.t==null?'':(R.t>=R.g?'The radiator has nothing to do.':'The radiator is working on it.');
+  const k=key();
+  let txt=LINES.home[k].replace('{r}',R.n).replace('{l}',l).replace('{t}',R.t==null?'unknown':R.t.toFixed(1)).replace('{g}',R.g==null?'none':R.g.toFixed(1)).replace('{h}',h).replace('{j}',R.on?'':'The light is off. Efficient. Dull.');
+  if(R.t==null)txt=R.n+': '+l+'. No heating up here.';
+  $('#homeNote').textContent=txt;
+}
+$('#hrooms').onclick=e=>{const b=e.target.closest('.rb');if(b){hi=+b.dataset.i;renderHome()}};
+$('#hcol').onclick=e=>{const l=e.target.dataset.l;if(l!==undefined){const R=HR[hi];R.on=true;R.b=Math.round((+l+1)/12*100);R.sc=null;renderHome()}};
+$('#htg').onclick=()=>{const R=HR[hi];R.on=!R.on;if(!R.on)R.sc=null;renderHome()};
+$('#hscenes').onclick=e=>{const n=e.target.dataset.s;if(n){const R=HR[hi],sc=SCENES.find(x=>x[0]===n);R.on=true;R.b=sc[1];R.sc=n;renderHome()}};
+$('#hup').onclick=()=>{const R=HR[hi];if(R.g!=null){R.g=Math.min(25,R.g+.5);renderHome()}};
+$('#hdn').onclick=()=>{const R=HR[hi];if(R.g!=null){R.g=Math.max(7,R.g-.5);renderHome()}};
+$('#alloff').onclick=()=>{HR.forEach(r=>{r.on=false;r.sc=null});renderHome()};
+$('#goodnight').onclick=()=>{HR.forEach(r=>{r.on=false;r.sc=null});HR[3].on=true;HR[3].b=5;HR[3].sc='Nightlight';renderHome()};
+$('#leaving').onclick=()=>{HR.forEach(r=>{r.on=false;r.sc=null});renderHome()};
+renderHome();
+refreshText();renderTimers();
+</script>
+</body>
+</html>

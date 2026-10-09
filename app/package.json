@@ -1,0 +1,27 @@
+{
+  "name": "hab",
+  "private": true,
+  "license": "Apache-2.0",
+  "version": "0.0.1",
+  "description": "HAB (Home Assistant Bot): a screen and assistant front end for Home Assistant.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "build:integration": "npm run build && node scripts/sync-integration.mjs"
+  },
+  "devDependencies": {
+    "eslint": "^10.12.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.4",
+    "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "home-assistant-js-websocket": "^9.7.1"
+  }
+}

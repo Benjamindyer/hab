@@ -1,0 +1,66 @@
+#slab {
+  position: absolute;
+  display: flex;
+  gap: calc(var(--u) * 0.45);
+  transition: all 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#slab i {
+  display: block;
+  flex: 1;
+  position: relative;
+  background: linear-gradient(180deg, #d9d6cc 0%, #8c8a84 55%, #4a4a47 100%);
+  border-radius: calc(var(--u) * 0.3);
+  box-shadow: 0 0 calc(var(--u) * 3) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
+}
+
+#slab i::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 6%;
+  height: 1px;
+  background: #0006;
+}
+
+body[data-scene="ambient"] #slab {
+  left: 6vw;
+  bottom: 8vh;
+  width: 7.5vmin;
+  height: 16vmin;
+  align-items: flex-end;
+}
+
+body[data-voice="listening"] #slab,
+body[data-voice="processing"] #slab,
+body[data-voice="responding"] #slab {
+  left: 50%;
+  top: 34vh;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: 34vmin;
+  height: 44vmin;
+  align-items: center;
+}
+
+body[data-scene="music"] #slab {
+  left: 6vw;
+  top: 8vh;
+  bottom: auto;
+  width: 7.5vmin;
+  height: 16vmin;
+  align-items: flex-end;
+}
+
+body[data-voice="listening"] #slab,
+body[data-voice="processing"] #slab,
+body[data-voice="responding"] #slab {
+  left: 50%;
+  top: 34vh;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: 34vmin;
+  height: 44vmin;
+  align-items: center;
+}

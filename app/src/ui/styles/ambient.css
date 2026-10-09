@@ -1,0 +1,57 @@
+#s-ambient .clock {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  font-weight: 100;
+  letter-spacing: 0.02em;
+  font-size: calc(var(--u) * 30);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+#s-ambient .date {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translateX(-50%);
+  color: var(--dim);
+  font-size: calc(var(--u) * 2.6);
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#s-ambient .note {
+  position: absolute;
+  left: 50%;
+  bottom: 9vh;
+  transform: translateX(-50%);
+  width: min(70vw, 120vmin);
+  text-align: center;
+  font-size: calc(var(--u) * 3.1);
+  font-weight: 300;
+  line-height: 1.35;
+  min-height: 2.8em;
+}
+
+.readout {
+  position: absolute;
+  top: 6vh;
+  font-size: calc(var(--u) * 1.9);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.readout strong {
+  display: block;
+  color: var(--ink);
+  font-weight: 300;
+  font-size: calc(var(--u) * 4.2);
+  letter-spacing: 0.02em;
+  margin-top: 0.5vmin;
+}
+
+.readout.left { left: 6vw; }
+.readout.right { right: 6vw; text-align: right; }

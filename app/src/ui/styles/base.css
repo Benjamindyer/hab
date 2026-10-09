@@ -1,0 +1,62 @@
+:root {
+  --bg: #06070a;
+  --panel: #0c0e12;
+  --ink: #ebe8df;
+  --dim: #6d7177;
+  --faint: #23262b;
+  --amber: #ffb14a;
+  --ice: #cfe3ee;
+  --u: 1vmin;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+#stage { position: fixed; inset: 0; }
+
+#stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  background:
+    radial-gradient(1px 1px at 12% 22%, #fff6 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 14%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 63% 71%, #fff4 50%, transparent 51%),
+    radial-gradient(1px 1px at 31% 83%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 91% 58%, #fff4 50%, transparent 51%),
+    radial-gradient(1px 1px at 45% 38%, #fff3 50%, transparent 51%);
+}
+
+#stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, #ffffff06 0 1px, transparent 1px 3px);
+  mix-blend-mode: screen;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.scene.active { opacity: 1; pointer-events: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene, #slab { transition: none; }
+}
