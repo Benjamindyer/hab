@@ -1,6 +1,7 @@
 import { createLibrary, type MediaBrowser } from "../state/library";
 import { buildMusicView, targetRoom } from "../state/music";
-import { musicFacts, musicKey, musicNote } from "../state/musicNote";
+import { createListeningHistory } from "../state/listening";
+import { musicFacts, musicKey, musicNote, partOfDay, type MusicExtras } from "../state/musicNote";
 import { createPageFollower, type MusicPage } from "../state/musicPage";
 import { createLibraryStore } from "../storage/libraryStore";
 import { el, setText } from "./dom";
@@ -24,6 +25,7 @@ export function createMusicScene(): Scene {
   const browser: MediaBrowser = { browse: async (...args) => (await sender.context()?.browser.browse(...args)) ?? [] };
   const library = createLibrary(browser, createLibraryStore());
   const state: MusicState = { view: undefined, room: null };
+  const history = createListeningHistory();
   const go = (page: MusicPage): void => pager.goTo(page, true);
   const controls = createControls(sender, state, go);
   const now = createNowPanel(controls.now);
@@ -47,8 +49,10 @@ export function createMusicScene(): Scene {
     picker.update(view, state.room);
     layout.setRoom(state.room);
     panel.update(library.get(), music.favourites, context.haUrl);
-    const fallback = musicNote(view, context.config.personality);
-    const request = { kind: "music" as const, key: musicKey(view), fallback, facts: musicFacts(view) };
+    if (view.mode === "playing") history.record(view.title, view.artist);
+    const extras: MusicExtras = { partOfDay: partOfDay(context.now.getHours()), sameArtistInARow: history.sameArtistInARow() };
+    const fallback = musicNote(view, context.config.personality, extras);
+    const request = { kind: "music" as const, key: musicKey(view, extras), fallback, facts: musicFacts(view, extras) };
     const line = view.mode === "playing" ? context.commentary.line(request, context.config.personality) : fallback;
     setText(note, sender.notice() ?? line);
   };

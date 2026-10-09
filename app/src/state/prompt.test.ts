@@ -19,6 +19,15 @@ describe("buildInstructions", () => {
     expect(buildInstructions("music", facts, { humour: 0, honesty: 0 }, "X")).toContain("no year, decade, genre");
   });
 
+  it("gives honesty an example that fits the kind of line", () => {
+    expect(buildInstructions("music", facts, { humour: 0, honesty: 100 }, "X")).toContain("the same artist playing again and again");
+    expect(buildInstructions("ambient", facts, { humour: 0, honesty: 100 }, "X")).toContain("a room warmer than its heating target");
+  });
+
+  it("tells a gentle line what to leave out", () => {
+    expect(buildInstructions("music", facts, { humour: 0, honesty: 0 }, "X")).toContain("repeats of the same artist or the time of day");
+  });
+
   it("describes the dials in words", () => {
     expect(buildInstructions("music", facts, { humour: 0, honesty: 100 }, "X")).toMatch(/No jokes.*Be blunt/s);
     expect(buildInstructions("music", facts, { humour: 100, honesty: 0 }, "X")).toMatch(/Clearly funny.*Be gentle/s);
