@@ -109,7 +109,7 @@ HAB reads the owner's HA first and guesses. The owner confirms, not builds.
 1. Install with HACS, then add the integration (one click, nothing to enter).
 2. Open HAB from the sidebar, or the wall address on the tablet, and sign in to HA once.
 3. With no saved settings HAB fills in its own: the first weather, heating and Spotify entities it finds. It never turns on a language model by itself. [Certain, built]
-4. A setup page (admin only, planned) lets the owner choose rooms, scenes, house buttons, power sensors, speakers, alerts and personality.
+4. A setup page (admin only) lets the owner choose the assistant's name and dials, weather, heating, Spotify player, favourites, voice device and language model. [Certain, first version built] Rooms, scenes, house buttons, power sensors and alerts come with their screens.
 5. Settings are stored in HA, so a replacement tablet picks up the same setup. [Certain, storage built]
 6. The wall tablet signs in as a normal (non-admin) HA user.
 

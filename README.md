@@ -42,11 +42,21 @@ With no settings saved, HAB works out what you have and fills in its own: the fi
 HAB never asks for a password or key. You connect services in Home Assistant, and HAB uses them.
 
 - **Spotify:** add the Spotify integration in Home Assistant (it needs your own Spotify developer app; Home Assistant walks you through it). Start a song on any device once, so HAB can read and save your playlists.
-- **Language model comments:** add an AI Task capable integration in Home Assistant (for example OpenAI, Anthropic, Google or Ollama). Then name its `ai_task` entity in the settings file (see below). Off until you do.
+- **Language model comments:** add an AI Task capable integration in Home Assistant (for example OpenAI, Anthropic, Google or Ollama). Then choose its `ai_task` entity on the Setup page. Off until you do.
 
 ### Changing settings
 
-A settings page inside HAB is planned but does not exist yet. Until then, to choose entities, add favourite playlists, name the assistant or turn on a language model, use the file method in [docs/INSTALL.md](docs/INSTALL.md), which hosts the app from `/config/www` with a `hab.config.json`.
+Sign in to HAB as a Home Assistant **administrator** (the sidebar item, or the address above on your own phone or computer). A **Setup** button appears in the menu that shows when you touch the screen. It lets you:
+
+- name the assistant and set its humour and honesty,
+- choose the weather and heating entities and the room name,
+- choose the Spotify player, the speaker to start on, and favourite playlists (paste a link from Spotify's Share menu),
+- choose a voice device,
+- turn on language model comments by choosing an AI Task entity.
+
+Press **Save**. The settings are stored in Home Assistant, so every tablet uses them. **Use automatic settings** goes back to HAB's own guess. The wall tablet signs in as a normal user and never sees Setup. (The Setup page is tested in pieces, not yet end to end on a real install.)
+
+If you host the app yourself with a `hab.config.json` file (see [docs/INSTALL.md](docs/INSTALL.md)), that file overrides saved settings.
 
 ### Updating
 

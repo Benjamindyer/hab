@@ -1,4 +1,4 @@
-"""The two commands the web app uses to read and save its settings."""
+"""The commands the web app uses to read, save and clear its settings."""
 
 from __future__ import annotations
 
@@ -34,7 +34,17 @@ async def ws_set_config(hass: HomeAssistant, connection: websocket_api.ActiveCon
     connection.send_result(msg["id"], {"config": msg["config"]})
 
 
+@websocket_api.require_admin
+@websocket_api.websocket_command({vol.Required("type"): "hab/config/clear"})
+@websocket_api.async_response
+async def ws_clear_config(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
+    """Forget the saved settings. Only an administrator may do this."""
+    await hass.data[DOMAIN]["store"].async_clear()
+    connection.send_result(msg["id"], {"config": None})
+
+
 def async_register_commands(hass: HomeAssistant) -> None:
     """Make the commands available to the web app."""
     websocket_api.async_register_command(hass, ws_get_config)
     websocket_api.async_register_command(hass, ws_set_config)
+    websocket_api.async_register_command(hass, ws_clear_config)

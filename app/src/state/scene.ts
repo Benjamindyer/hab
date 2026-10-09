@@ -1,4 +1,4 @@
-export type SceneId = "ambient" | "voice" | "timers" | "music" | "home" | "power" | "alerts";
+export type SceneId = "ambient" | "voice" | "timers" | "music" | "home" | "power" | "alerts" | "setup";
 
 export type VoiceState = "idle" | "listening" | "processing" | "responding";
 

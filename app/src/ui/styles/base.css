@@ -60,3 +60,17 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .scene, #slab { transition: none; }
 }
+
+.btn {
+  background: transparent;
+  border: 1px solid #3a3e44;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 300;
+  font-size: min(calc(var(--u) * 2.2), 2vw);
+  padding: calc(var(--u) * 1.6) calc(var(--u) * 3);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.btn:active { background: #ffffff14; }

@@ -1,4 +1,5 @@
 import type { HabConfig } from "../config/config";
+import type { SettingsService } from "../config/settings";
 import type { Commentary } from "../state/commentary";
 import type { EntityStore } from "../state/entities";
 import type { MediaBrowser } from "../state/library";
@@ -9,6 +10,7 @@ import type { ServiceRunner } from "../state/services";
 import { createAmbientScene } from "./ambientScene";
 import { createMusicScene } from "./musicScene";
 import { createNav } from "./nav";
+import { createSetupScene } from "./setup/setupScene";
 import type { Scene } from "./scene";
 import { createSlab } from "./slab";
 
@@ -26,13 +28,14 @@ export interface AppDeps {
   run: ServiceRunner;
   browser: MediaBrowser;
   commentary: Commentary;
+  settings: SettingsService | null;
 }
 
 /** Builds the stage, then redraws it whenever Home Assistant changes or each second. */
 export function mountApp(root: HTMLElement, deps: AppDeps): void {
-  const { entities, config, haUrl, run, browser, commentary } = deps;
+  const { entities, config, haUrl, run, browser, commentary, settings } = deps;
   const fallback = createAmbientScene();
-  const scenes: Scene[] = [fallback, createMusicScene()];
+  const scenes: Scene[] = [fallback, createMusicScene(), ...(settings ? [createSetupScene()] : [])];
   const slab = createSlab();
   let requested: SceneId | null = null;
   let lastTouch = Date.now();
@@ -46,10 +49,13 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
   const stage = document.createElement("div");
   stage.id = "stage";
   stage.append(slab.element, ...scenes.map((scene) => scene.element), nav.element);
-  stage.addEventListener("pointerdown", () => {
+  const touched = (): void => {
     lastTouch = Date.now();
     nav.wake();
-  });
+  };
+  stage.addEventListener("pointerdown", touched);
+  stage.addEventListener("keydown", touched);
+  stage.addEventListener("input", touched);
   root.replaceChildren(stage);
 
   function refresh(): void {
@@ -62,7 +68,7 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
     nav.setActive(active.id);
     slab.setVoice(inputs.voice);
     slab.setMusic(musicSeed(entities, config.music?.player));
-    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary });
+    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings });
   }
 
   entities.subscribe(refresh);

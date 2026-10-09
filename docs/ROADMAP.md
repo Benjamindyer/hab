@@ -24,7 +24,7 @@ Pass: a week of daily use at home, a list of faults, and a non-technical family 
 
 ### M4. Easy for others to install
 - HACS install tested on a clean HA.
-- Owner-only setup and Connections pages (SPEC 6.5 and 6.7).
+- Setup page: first version built (name, dials, weather, heating, Spotify, favourites, voice device, language model). Still to come: the Connections page (SPEC 6.7) and settings for scenes, rooms and power.
 - Screens stored in HA, so a replacement tablet needs no setup.
 - Documentation with screenshots.
 

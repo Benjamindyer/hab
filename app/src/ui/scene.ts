@@ -1,4 +1,5 @@
 import type { HabConfig } from "../config/config";
+import type { SettingsService } from "../config/settings";
 import type { Commentary } from "../state/commentary";
 import type { EntityStore } from "../state/entities";
 import type { MediaBrowser } from "../state/library";
@@ -14,6 +15,8 @@ export interface SceneContext {
   run: ServiceRunner;
   browser: MediaBrowser;
   commentary: Commentary;
+  /** Present only for an administrator. */
+  settings: SettingsService | null;
 }
 
 /** Every scene is a self-contained module with this shape. */

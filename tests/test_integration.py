@@ -78,3 +78,23 @@ async def test_the_web_app_is_served(hass, hass_client):
     response = await client.get(f"{STATIC_URL}/index.html")
     assert response.status == 200
     assert "HAB" in await response.text()
+
+
+async def test_admin_can_clear_saved_settings(hass, hass_ws_client):
+    await _setup(hass)
+    client = await hass_ws_client(hass)
+    await client.send_json({"id": 1, "type": "hab/config/set", "config": GOOD})
+    assert (await client.receive_json())["success"] is True
+    await client.send_json({"id": 2, "type": "hab/config/clear"})
+    assert (await client.receive_json())["success"] is True
+    await client.send_json({"id": 3, "type": "hab/config/get"})
+    assert (await client.receive_json())["result"] == {"config": None}
+
+
+async def test_a_normal_user_cannot_clear_settings(hass, hass_ws_client, hass_read_only_access_token):
+    await _setup(hass)
+    client = await hass_ws_client(hass, hass_read_only_access_token)
+    await client.send_json({"id": 1, "type": "hab/config/clear"})
+    reply = await client.receive_json()
+    assert reply["success"] is False
+    assert reply["error"]["code"] == "unauthorized"

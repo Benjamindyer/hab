@@ -4,6 +4,7 @@ import { resolveConfig } from "./config/resolve";
 import { connectToHa } from "./ha/connect";
 import { createConnectionStatus } from "./ha/connectionStatus";
 import { createEntityStore } from "./ha/entityStore";
+import { createSettingsService, isAdmin } from "./ha/settingsService";
 import { fetchStoredConfig } from "./ha/storedConfig";
 import { mountApp } from "./ui/app";
 import { mountConnectionBanner } from "./ui/banner";
@@ -28,8 +29,9 @@ async function start(app: HTMLElement): Promise<void> {
     return;
   }
   const stored = file ? null : await fetchStoredConfig(connection);
-  const { config } = resolveConfig({ file, stored, entities: entities.all() });
-  mountApp(app, buildDeps(connection, entities, config, haUrl));
+  const { config, source } = resolveConfig({ file, stored, entities: entities.all() });
+  const settings = (await isAdmin(connection)) ? createSettingsService(connection, source) : null;
+  mountApp(app, buildDeps({ connection, entities, config, haUrl, settings }));
   mountConnectionBanner(document.body, createConnectionStatus(connection));
   keepScreenAwake();
   startUpdateCheck();

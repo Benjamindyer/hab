@@ -23,3 +23,7 @@ class ConfigStore:
     async def async_save(self, config: dict[str, Any]) -> None:
         """Save the settings."""
         await self._store.async_save(config)
+
+    async def async_clear(self) -> None:
+        """Forget the saved settings, so HAB goes back to guessing them."""
+        await self._store.async_remove()

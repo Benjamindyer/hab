@@ -1,6 +1,6 @@
 # Hosting HAB yourself, with your own settings file
 
-The normal way to install HAB is the HACS integration (see the README). This page is for two cases: you want to choose your own settings today (the settings page inside HAB is not built yet), or you do not want the integration.
+The normal way to install HAB is the HACS integration (see the README). This page is for two cases: you do not want the integration, or you want settings in a file you control.
 Steps marked "not tested" have not been tried on a real Home Assistant yet.
 
 ## 1. Build
