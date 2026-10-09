@@ -1,7 +1,7 @@
 /* Now playing: a big cover, a record that slides out and spins, and the details beside them */
-#s-music { --art: min(47vh, 38vw); --left: 6vw; --top: 11vh; --gap: 4vh; --btn: calc(var(--u) * 11); --btn-main: calc(var(--u) * 15); }
+#s-music { --art: min(47vh, 38vw); --left: 6vw; --top: 11vh; --gap: 4vh; --btn: calc(var(--u) * 9); --btn-main: calc(var(--u) * 12.5); }
 /* A few seconds into a track the title fades, the controls shrink, and the cover and record grow, centred. */
-#s-music.immersive { --art: min(52vh, 44vw); --left: calc((100vw - var(--art) * 1.54) / 2); --top: 11vh; --gap: 2.5vh; --btn: calc(var(--u) * 7.5); --btn-main: calc(var(--u) * 10); }
+#s-music.immersive { --art: min(52vh, 44vw); --left: calc((100vw - var(--art) * 1.54) / 2); --top: 11vh; --gap: 2.5vh; --btn: calc(var(--u) * 7); --btn-main: calc(var(--u) * 9.5); }
 #s-music.immersive .note { font-size: calc(var(--u) * 2.7); bottom: 8vh; }
 #s-music.immersive .note-credit { bottom: 4vh; }
 
@@ -70,11 +70,21 @@
 .ic:active { background: #ffffff14; }
 .ic svg { width: 42%; height: 42%; fill: currentColor; }
 
-#s-music .vol { display: flex; align-items: center; gap: 1.6vw; justify-self: end; width: min(100%, 40vmin); }
-#s-music .vol .k { color: var(--dim); font-size: calc(var(--u) * 1.5); letter-spacing: 0.3em; text-transform: uppercase; }
-#s-music .bars { flex: 1; display: flex; gap: 0.5vmin; height: calc(var(--u) * 5); align-items: flex-end; cursor: pointer; }
-#s-music .bars i { flex: 1; background: #23262b; }
-#s-music .bars i.on { background: var(--ice); }
+/* The volume is a knob, like a record player's: quiet until it is touched. */
+#s-music { --knob: calc(var(--u) * 10); }
+#s-music.immersive { --knob: calc(var(--u) * 8); }
+#s-music .vol { display: flex; flex-direction: column; align-items: center; gap: 0.8vmin; justify-self: end; margin-right: 2vw; }
+#s-music .vol .k { color: var(--dim); font-size: calc(var(--u) * 1.2); letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.6; }
+.knob { position: relative; width: var(--knob); height: var(--knob); opacity: 0.55; touch-action: none; cursor: grab; transition: opacity 0.4s ease, width 1.2s ease, height 1.2s ease; }
+.knob.active { opacity: 1; cursor: grabbing; }
+.knob svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.knob .tick { stroke: #2b2f35; stroke-width: 1.6; stroke-linecap: round; transition: stroke 0.3s ease; }
+.knob .tick.lit { stroke: var(--ice); }
+.knob .cap { fill: #17191d; stroke: #3a3e44; stroke-width: 1; }
+.knob .pointer { stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.knob-readout { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--ink); font-size: calc(var(--u) * 1.8); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+.knob.active .knob-readout { opacity: 1; }
+.knob.active .pointer { opacity: 0; }
 
 /* Pager */
 .pager { position: absolute; inset: 0; }
@@ -121,7 +131,7 @@
 .pl:active { opacity: 0.8; }
 #s-music .empty { color: var(--dim); font-weight: 300; font-size: min(calc(var(--u) * 2.2), 1.9vw); padding: 1vh 0; }
 
-#s-music .note { position: absolute; z-index: 2; pointer-events: none; left: 50%; bottom: 9vh; transform: translateX(-50%); width: min(70vw, 120vmin); text-align: center; font-size: calc(var(--u) * 3.1); font-weight: 300; line-height: 1.35; min-height: 2.8em; }
+#s-music .note { position: absolute; z-index: 2; pointer-events: none; left: 50%; bottom: 9vh; transform: translateX(-50%); width: min(70vw, 120vmin); text-align: center; font-size: calc(var(--u) * 3); font-weight: 300; line-height: 1.35; min-height: 2.8em; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 
 #s-music .note-credit { position: absolute; z-index: 2; left: 50%; bottom: 5vh; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; pointer-events: none; }
