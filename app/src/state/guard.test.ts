@@ -79,3 +79,24 @@ describe("isAcceptable and a worked-out gap", () => {
     expect(isAcceptable("The kitchen is running 7 degrees above its heating target.", home)).toBe(false);
   });
 });
+
+describe("isAcceptable with the model's own knowledge allowed", () => {
+  const music = { track: "Ripcord", artist: "Radiohead", speaker: "kitchen", state: "playing" };
+
+  it("accepts a year and a decade", () => {
+    expect(isAcceptable("A nineties classic, out in 1993.", music, { ownKnowledge: true })).toBe(true);
+  });
+
+  it("accepts a decade written in digits", () => {
+    expect(isAcceptable("A certified 90s banger.", music, { ownKnowledge: true })).toBe(true);
+    expect(isAcceptable("Pure '80s.", music, { ownKnowledge: true })).toBe(true);
+  });
+
+  it("still rejects other invented numbers", () => {
+    expect(isAcceptable("Playing at 85 percent volume.", music, { ownKnowledge: true })).toBe(false);
+  });
+
+  it("still enforces length and single line", () => {
+    expect(isAcceptable("x".repeat(300), music, { ownKnowledge: true })).toBe(false);
+  });
+});

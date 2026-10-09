@@ -49,6 +49,17 @@ export function dialInput(value: number, onChange: (value: number) => void): HTM
   return box;
 }
 
+/** A tick box with its label beside it. */
+export function checkboxInput(label: string, value: boolean, onChange: (value: boolean) => void): HTMLElement {
+  const box = el("label", "check");
+  const input = el("input");
+  input.type = "checkbox";
+  input.checked = value;
+  input.addEventListener("change", () => onChange(input.checked));
+  box.append(input, el("span", "", label));
+  return box;
+}
+
 export function section(title: string, note?: string): HTMLElement {
   const box = el("div", "section");
   box.append(el("div", "section-title", title));

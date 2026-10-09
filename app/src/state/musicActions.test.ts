@@ -4,7 +4,7 @@ import { chooseRoom, playFavourite, playPause, setVolume, skip, uriType } from "
 
 const P = "media_player.spotify";
 const view = (over: Partial<MusicView>): MusicView => ({
-  mode: "idle", title: null, artist: null, art: null, position: null, duration: null,
+  mode: "idle", title: null, artist: null, album: null, art: null, position: null, duration: null,
   volume: null, source: null, sources: [], favourites: [], ...over,
 });
 const fav = { name: "Morning", uri: "spotify:playlist:abc" };

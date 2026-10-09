@@ -26,7 +26,7 @@ export function buildDeps({ connection, entities, config, haUrl, settings }: Par
     haUrl,
     run: createServiceRunner(connection),
     browser: createMediaBrowser(connection),
-    commentary: createCommentary(generator, { name: config.personality.name }),
+    commentary: createCommentary(generator, { name: config.personality.name, musicKnowledge: config.llm?.musicKnowledge ?? false }),
     settings,
   };
 }

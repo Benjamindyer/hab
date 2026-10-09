@@ -19,6 +19,7 @@ export interface Draft {
   defaultRoom: string;
   favourites: DraftFavourite[];
   llm: string;
+  musicKnowledge: boolean;
   satellite: string;
 }
 
@@ -41,6 +42,7 @@ export function toDraft(config: HabConfig): Draft {
     climate: config.ambient.climate ?? "",
     ...musicDraft(config),
     llm: config.llm?.personality ?? "",
+    musicKnowledge: config.llm?.musicKnowledge ?? false,
     satellite: config.satellite ?? "",
   };
 }
@@ -65,7 +67,7 @@ export function fromDraft(draft: Draft): HabConfig {
     personality: { humour: draft.humour, honesty: draft.honesty, ...text("name", draft.name) },
     ambient: { room: draft.room.trim() || "Home", ...text("weather", draft.weather), ...text("climate", draft.climate) },
     ...(music && { music }),
-    ...(draft.llm && { llm: { personality: draft.llm } }),
+    ...((draft.llm || draft.musicKnowledge) && { llm: { ...text("personality", draft.llm), ...(draft.musicKnowledge && { musicKnowledge: true }) } }),
     ...text("satellite", draft.satellite),
   });
 }

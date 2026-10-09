@@ -38,9 +38,18 @@ export function numbersAreGrounded(text: string, facts: Facts): boolean {
   return [...numbersIn(text), ...wordNumbersIn(text)].every((n) => known.some((fact) => fact === n || Math.round(fact) === n));
 }
 
+/** A year (1993), or a decade in digits (90s, '90s). */
+const YEAR = /\b(?:19|20)\d{2}s?\b|'?\b\d0s\b/g;
+
+export interface GuardOptions {
+  /** The owner allowed the model to add what it knows about music, so years and decades may appear. */
+  ownKnowledge?: boolean;
+}
+
 /** Checks a model reply before it reaches the screen. A reply that fails is thrown away. */
-export function isAcceptable(text: string, facts: Facts): boolean {
+export function isAcceptable(text: string, facts: Facts, options: GuardOptions = {}): boolean {
   if (text.length === 0 || text.length > MAX_LENGTH) return false;
   if (/[\n\r]/.test(text)) return false;
+  if (options.ownKnowledge) return numbersAreGrounded(text.replace(YEAR, ""), facts);
   return numbersAreGrounded(text, facts) && decadesAreGrounded(text, facts);
 }

@@ -50,6 +50,7 @@ export function musicFacts(view: MusicView, extras: MusicExtras): Facts {
   return {
     track: view.title,
     artist: view.artist,
+    album: view.album,
     speaker: view.source,
     state: view.mode,
     partOfDay: extras.partOfDay,

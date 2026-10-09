@@ -13,7 +13,7 @@ It does **not** control your house, answer questions or speak. It writes one sho
 When something changes, HAB sends a short list of facts and some instructions. For example:
 
 - the time of day, the room name and room temperature, the outside temperature and the weather,
-- the track name, artist and speaker, when music is playing,
+- the track name, artist, album and speaker, when music is playing, and how many tracks in a row share an artist,
 - your Humour and Honesty settings and the assistant's name.
 
 It sends nothing else: no camera images, no recordings, no list of your devices, no passwords or keys.
@@ -29,6 +29,12 @@ The facts go to **whichever model you set up in Home Assistant**. A cloud model 
 - **Honesty means blunt, not untrue.** At a high honesty setting the line says plainly what the facts show. The assistant is never meant to lie at any setting.
 
 A model can still be odd or wrong in ways these checks do not catch. If a line looks wrong, the fixed line is one setting away (see "Turning it off").
+
+## Music knowledge (optional, off by default)
+
+By default a music line can only use the facts HAB gives it: the track, artist, album, speaker, time of day and how many tracks in a row share an artist. That keeps it true, but it can be plain.
+
+You can switch on **Music knowledge** in Setup (under Voice and language model). The model may then add one short thing it knows about the artist or song, for example a remark about when it came out. **A model can be wrong about music, and HAB cannot check it.** The prompt asks the model to say nothing unless it is sure, but that is a request, not a guarantee. Years and decades are allowed in this mode. Other made-up numbers are still thrown away. Home screen lines never use this switch.
 
 ## Cost
 

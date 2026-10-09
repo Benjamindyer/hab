@@ -30,15 +30,30 @@ function honestyWords(kind: CommentKind, honesty: number): string {
   return `Be blunt. If the facts show something unflattering or wasteful, ${BLUNT_EXAMPLE[kind]}, say so directly.`;
 }
 
+export interface InstructionParts {
+  kind: CommentKind;
+  facts: Facts;
+  dials: Personality;
+  name: string;
+  /** Let a music line use what the model knows about the artist or song. */
+  knowledge?: boolean;
+}
+
+const FACTS_ONLY_MUSIC =
+  "Do not state anything about a song or artist that is not in the facts: no year, decade, genre, album or band members. An opinion is fine.";
+const KNOWLEDGE_MUSIC =
+  "You may add one short thing you know about the artist or song, but only if you are sure it is true. If you are not sure, do not guess: say nothing about it.";
+
 /** The instructions sent to the model. Facts are given as data, and the rules forbid inventing more. */
-export function buildInstructions(kind: CommentKind, facts: Facts, dials: Personality, name: string): string {
+export function buildInstructions({ kind, facts, dials, name, knowledge = false }: InstructionParts): string {
+  const music = kind === "music" && knowledge ? KNOWLEDGE_MUSIC : FACTS_ONLY_MUSIC;
   return [
     `You are ${name}, the assistant in a family home. You write one short line for the home screen.`,
     SITUATION[kind],
     `Humour ${dials.humour} out of 100: ${humourWords(dials.humour)}`,
     `Honesty ${dials.honesty} out of 100: ${honestyWords(kind, dials.honesty)}`,
     "Rules: use only the facts below. Never invent facts, numbers, names or events.",
-    "Do not state anything about a song or artist that is not in the facts: no year, decade, genre, album or band members. An opinion is fine.",
+    music,
     "At most two short sentences and under 200 characters. Plain text only: no emoji, quotation marks or markdown. British English.",
     `Facts: ${JSON.stringify(facts)}`,
   ].join("\n");

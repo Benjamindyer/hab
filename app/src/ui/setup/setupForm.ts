@@ -3,7 +3,7 @@ import type { EntityStore } from "../../state/entities";
 import { deviceOptions, entityOptions } from "../../state/options";
 import { el } from "../dom";
 import { createFavouritesEditor } from "./favourites";
-import { dialInput, row, section, selectInput, textInput } from "./fields";
+import { checkboxInput, dialInput, row, section, selectInput, textInput } from "./fields";
 
 function assistant(draft: Draft): HTMLElement {
   const box = section("Assistant", "Its name and character. The dials change how it words things.");
@@ -51,6 +51,8 @@ function extras(draft: Draft, entities: EntityStore): HTMLElement {
     row("Voice device", selectInput(entityOptions(all, "assist_satellite"), draft.satellite, (v) => { draft.satellite = v; }), "Its state drives the listening animation."),
     row("Language model for comments", selectInput(entityOptions(all, "ai_task"), draft.llm, (v) => { draft.llm = v; }),
       "Off unless you choose one. When on, a short list of facts (track, room temperature, time) is sent to the model you set up in Home Assistant, which may be a cloud service. See docs/LANGUAGE-MODELS.md in the HAB repository."),
+    row("Music knowledge", checkboxInput("Let the model add what it knows about the artist or song", draft.musicKnowledge, (v) => { draft.musicKnowledge = v; }),
+      "Makes music lines more interesting. A model can be wrong about music and HAB cannot check it, so this is off unless you turn it on."),
   );
   return box;
 }

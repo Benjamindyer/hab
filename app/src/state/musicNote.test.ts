@@ -3,7 +3,7 @@ import type { MusicView } from "./music";
 import { musicFacts, musicKey, musicNote, partOfDay, type MusicExtras } from "./musicNote";
 
 const base: MusicView = {
-  mode: "idle", title: null, artist: null, art: null, position: null, duration: null,
+  mode: "idle", title: null, artist: null, album: null, art: null, position: null, duration: null,
   volume: null, source: null, sources: [], favourites: [],
 };
 const plain = { humour: 0, honesty: 0 };
@@ -57,6 +57,7 @@ describe("music facts and key", () => {
     expect(musicFacts(view, calm)).toEqual({
       track: "Ripcord",
       artist: "Radiohead",
+      album: null,
       speaker: "kitchen",
       state: "playing",
       partOfDay: "afternoon",

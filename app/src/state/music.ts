@@ -7,6 +7,7 @@ export interface MusicView {
   mode: MusicMode;
   title: string | null;
   artist: string | null;
+  album: string | null;
   art: string | null;
   position: number | null;
   duration: number | null;
@@ -60,6 +61,7 @@ export function buildMusicView(store: EntityStore, config: MusicConfig, now: Dat
     mode,
     title: text(player, "media_title"),
     artist: text(player, "media_artist"),
+    album: text(player, "media_album_name"),
     art: resolveArt(text(player, "entity_picture"), haUrl),
     position: currentPosition(player, mode, now),
     duration: num(player, "media_duration"),

@@ -1,6 +1,11 @@
 export interface LlmConfig {
   /** The AI Task entity that writes the screen comments, for example ai_task.claude. */
   personality?: string;
+  /**
+   * Let the model add what it knows about an artist or song. Off by default, because a model
+   * can be wrong about music and HAB cannot check it.
+   */
+  musicKnowledge?: boolean;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
@@ -13,5 +18,7 @@ export function parseLlm(raw: unknown): LlmConfig | undefined {
   if (entity !== undefined && (typeof entity !== "string" || !entity.startsWith("ai_task."))) {
     throw new Error("llm.personality must be an AI Task entity id that starts with ai_task.");
   }
-  return typeof entity === "string" ? { personality: entity } : {};
+  const knowledge = raw["musicKnowledge"];
+  if (knowledge !== undefined && typeof knowledge !== "boolean") throw new Error("llm.musicKnowledge must be true or false.");
+  return { ...(typeof entity === "string" && { personality: entity }), ...(typeof knowledge === "boolean" && { musicKnowledge: knowledge }) };
 }

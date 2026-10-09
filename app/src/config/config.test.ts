@@ -75,3 +75,13 @@ describe("parseConfig haUrl", () => {
     expect(parseConfig(valid).haUrl).toBeUndefined();
   });
 });
+
+describe("parseConfig musicKnowledge", () => {
+  it("accepts the music knowledge switch", () => {
+    expect(parseConfig({ ...valid, llm: { personality: "ai_task.m", musicKnowledge: true } }).llm?.musicKnowledge).toBe(true);
+  });
+
+  it("rejects a switch that is not true or false", () => {
+    expect(() => parseConfig({ ...valid, llm: { musicKnowledge: "yes" } })).toThrow(/true or false/);
+  });
+});

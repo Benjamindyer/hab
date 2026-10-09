@@ -19,3 +19,6 @@
 .setup-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 11vh; display: flex; align-items: center; justify-content: flex-end; gap: 1.6vmin; padding: 0 6vw 0 18vw; background: linear-gradient(180deg, transparent, #06070aee 40%); z-index: 3; }
 .setup-status { flex: 1; color: var(--ice); font-weight: 300; font-size: min(calc(var(--u) * 2), 1.8vw); }
 .setup-status.bad { color: var(--amber); }
+
+.check { display: flex; align-items: center; gap: 1.4vmin; font-weight: 300; font-size: min(calc(var(--u) * 2.2), 2vw); cursor: pointer; }
+.check input { width: calc(var(--u) * 3); height: calc(var(--u) * 3); accent-color: var(--ice); }

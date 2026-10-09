@@ -23,6 +23,8 @@ export interface CommentaryOptions {
   clock?: () => number;
   minGapMs?: number;
   backoffMs?: number;
+  /** Let music lines use what the model knows. Off unless the owner chose it. */
+  musicKnowledge?: boolean;
 }
 
 interface Entry {
@@ -44,7 +46,7 @@ interface Pace {
  * redraws every second does not ask every second.
  */
 export function createCommentary(generator: TextGenerator | null, options: CommentaryOptions = {}): Commentary {
-  const { name = "the assistant", clock = Date.now, minGapMs = 120_000, backoffMs = 300_000 } = options;
+  const { name = "the assistant", clock = Date.now, minGapMs = 120_000, backoffMs = 300_000, musicKnowledge = false } = options;
   const cache = new Map<CommentKind, Entry>();
   const pace = new Map<CommentKind, Pace>();
   const paceOf = (kind: CommentKind): Pace => {
@@ -58,10 +60,11 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
     try {
       const reply = await generator.generate({
         taskName: `HAB ${request.kind} comment`,
-        instructions: buildInstructions(request.kind, request.facts, dials, name),
+        instructions: buildInstructions({ kind: request.kind, facts: request.facts, dials, name, knowledge: musicKnowledge }),
       });
       const text = reply.trim();
-      cache.set(request.kind, { key, text: isAcceptable(text, request.facts) ? text : null });
+      const ownKnowledge = musicKnowledge && request.kind === "music";
+      cache.set(request.kind, { key, text: isAcceptable(text, request.facts, { ownKnowledge }) ? text : null });
     } catch {
       paceOf(request.kind).lastFail = clock();
     }
