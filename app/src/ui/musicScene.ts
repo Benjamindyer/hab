@@ -11,6 +11,7 @@ import { createNowPanel } from "./musicNow";
 import { buildPages } from "./musicPages";
 import { musicLine } from "./musicLine";
 import { createPicker } from "./musicPicker";
+import { wireNowGestures } from "./nowGestures";
 import { createSender } from "./musicSender";
 import { createPager } from "./pager";
 import type { Scene, SceneContext } from "./scene";
@@ -19,24 +20,24 @@ import "./styles/music.css";
 
 /** Spotify, in three swipeable pages: where to play, your library, and what is playing. */
 export function createMusicScene(): Scene {
-  const element = el("section", "scene");
-  element.id = "s-music";
+  const element = Object.assign(el("section", "scene"), { id: "s-music" });
   const note = el("div", "note");
   const credit = el("div", "note-credit", "Facts from MusicBrainz");
   const sender = createSender();
   const browser: MediaBrowser = { browse: async (...args) => (await sender.context()?.browser.browse(...args)) ?? [] };
   const library = createLibrary(browser, createLibraryStore());
   const state: MusicState = { view: undefined, room: null };
-  const history = createListeningHistory();
   const go = (page: MusicPage): void => pager.goTo(page, true);
   const controls = createControls(sender, state, go);
   const now = createNowPanel(controls.now);
   const panel = createLibraryPanel(controls.play);
   const picker = createPicker(controls.chooseRoom);
   const layout = buildPages(now, picker, panel, () => go("speakers"));
-  const pager = createPager(layout.pages);
+  const pager = createPager(layout.pages, ["now"]);
+  wireNowGestures(layout.nowElement, () => state.view, controls.now);
   element.append(pager.element, pager.tabs, note, credit);
   const immersive = createImmersiveView(element);
+  const history = createListeningHistory();
   const follower = createPageFollower();
   let firstDraw = true;
 

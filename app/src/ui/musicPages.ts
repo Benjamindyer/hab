@@ -7,6 +7,8 @@ import type { PagerPage } from "./pager";
 
 export interface MusicPages {
   pages: PagerPage[];
+  /** The Now playing page, where taps and swipes control the music. */
+  nowElement: HTMLElement;
   /** Shows where music will play, on the library page. */
   setRoom(room: string | null): void;
 }
@@ -20,6 +22,7 @@ export function buildPages(now: NowPanel, picker: Picker, panel: LibraryPanel, g
   const nowPage = el("div", "now-layout");
   nowPage.append(...now.elements);
   return {
+    nowElement: nowPage,
     pages: [
       { id: "now", label: "Now playing", element: nowPage },
       { id: "library", label: "Library", element: library },

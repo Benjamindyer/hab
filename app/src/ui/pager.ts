@@ -20,8 +20,8 @@ export function pageIndex(scrollLeft: number, width: number, count: number): num
   return Math.min(count - 1, Math.max(0, Math.round(scrollLeft / width)));
 }
 
-/** Pages side by side that you swipe between. The browser does the snapping, so it feels native. */
-export function createPager(pages: PagerPage[]): Pager {
+/** Pages side by side that you swipe between. The browser does the snapping, so it feels native. Pages in lockedIds ignore swipes. */
+export function createPager(pages: PagerPage[], lockedIds: string[] = []): Pager {
   const element = el("div", "pager");
   const track = element.appendChild(el("div", "pager-track"));
   const tabs = el("div", "pager-tabs");
@@ -34,7 +34,11 @@ export function createPager(pages: PagerPage[]): Pager {
     return button;
   });
 
-  const markActive = (index: number): void => buttons.forEach((b, i) => b.classList.toggle("on", i === index));
+  const markActive = (index: number): void => {
+    buttons.forEach((b, i) => b.classList.toggle("on", i === index));
+    // On a page that uses sideways swipes itself, swiping does not change page. The tabs still do.
+    track.classList.toggle("locked", lockedIds.includes(pages[index]?.id ?? ""));
+  };
 
   function goTo(id: string, smooth = false): void {
     const index = pages.findIndex((page) => page.id === id);

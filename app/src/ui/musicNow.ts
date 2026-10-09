@@ -1,5 +1,6 @@
 import { el, mmss, setText } from "./dom";
 import type { MusicView } from "../state/music";
+import { NEXT, PAUSE, PLAY, PREV } from "./icons";
 import { createRecord } from "./record";
 import { createVolumeKnob } from "./volumeKnob";
 
@@ -14,10 +15,6 @@ export interface NowPanel {
   update(view: MusicView): void;
 }
 
-const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>';
-const PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
-const PREV = '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg>';
-const NEXT = '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l11 7L4 19z"/></svg>';
 
 function iconButton(svg: string, label: string, onClick: () => void, main = false): HTMLButtonElement {
   const button = el("button", main ? "ic main" : "ic");

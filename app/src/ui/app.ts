@@ -61,7 +61,9 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
   root.replaceChildren(stage);
 
   function refresh(): void {
-    const picked = activeRequest(requested, lastTouch, Date.now(), IDLE_RETURN_MS);
+    // Music that is playing keeps the music screen up until the user chooses to leave it.
+    const hold = requested === "music" && musicSeed(entities, config.music?.player) !== null;
+    const picked = activeRequest({ requested, lastTouch, now: Date.now(), timeoutMs: IDLE_RETURN_MS, hold });
     const inputs = deriveInputs(entities, config.satellite, picked);
     const active = scenes.find((scene) => scene.id === chooseScene(inputs)) ?? fallback;
     scenes.forEach((scene) => scene.element.classList.toggle("active", scene === active));

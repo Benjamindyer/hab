@@ -1,15 +1,17 @@
 /* Now playing. The page is a column: the cover, record and details take whatever height is left above the
    controls, and a band at the bottom is kept clear for the line of text, so nothing can overlap. */
 #s-music {
-  --band: 25vh; --btn: calc(var(--u) * 9); --btn-main: calc(var(--u) * 12.5); --knob: calc(var(--u) * 10);
+  --band: 25vh; --btn: calc(var(--u) * 6); --btn-main: calc(var(--u) * 8); --knob: calc(var(--u) * 7);
 }
 /* A few seconds into a track the title fades and the controls shrink, which gives the cover more height. */
-#s-music.immersive { --btn: calc(var(--u) * 7); --btn-main: calc(var(--u) * 9.5); --knob: calc(var(--u) * 8); }
+#s-music.immersive { --btn: calc(var(--u) * 4.8); --btn-main: calc(var(--u) * 6.2); --knob: calc(var(--u) * 5.6); }
 
-.now-layout { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 10vh 6vw var(--band) 6vw; box-sizing: border-box; }
-#s-music .stage { position: relative; flex: 1 1 0; min-height: 0; container-type: size; }
-#s-music .stage > * { --art: min(100cqh, 38vw); --sleeve-left: 0px; }
-#s-music.immersive .stage > * { --art: min(100cqh, 46vw); --sleeve-left: calc((100cqw - var(--art) * 1.54) / 2); }
+.now-layout { touch-action: pan-y; user-select: none; -webkit-user-select: none; position: absolute; inset: 0; display: flex; flex-direction: column; padding: 10vh 6vw var(--band) 6vw; box-sizing: border-box; }
+#s-music .stage { position: relative; flex: 1 1 0; min-height: 0; container-type: size; transition: transform 0.3s ease; }
+#s-music .now-layout.nudge-left .stage { transform: translateX(-2.5vw); }
+#s-music .now-layout.nudge-right .stage { transform: translateX(2.5vw); }
+#s-music .stage > * { --art: min(100cqh, 40vw); --sleeve-left: 0px; }
+#s-music.immersive .stage > * { --art: min(100cqh, 54vw); --sleeve-left: calc((100cqw - var(--art) * 1.54) / 2); }
 
 #s-music .art-frame {
   position: absolute; left: var(--sleeve-left); top: 0; width: var(--art); height: var(--art); z-index: 2;
@@ -92,6 +94,7 @@
 .knob.active .pointer { opacity: 0; }
 
 /* Pager */
+.pager-track.locked { overflow-x: hidden; }
 .pager { position: absolute; inset: 0; }
 .pager-track { position: absolute; inset: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
 .pager-track::-webkit-scrollbar { display: none; }
@@ -143,3 +146,9 @@
 #s-music .note-credit[hidden] { display: none; }
 
 #s-music.immersive .info { opacity: 0; pointer-events: none; }
+
+/* A symbol that appears over the cover and fades, to answer a tap or a swipe. */
+.tap-hint { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); width: 14vmin; height: 14vmin; border-radius: 50%; background: #06070acc; border: 1px solid #ffffff33; display: grid; place-items: center; opacity: 0; pointer-events: none; z-index: 5; }
+.tap-hint svg { width: 46%; height: 46%; fill: var(--ink); }
+.tap-hint.show { animation: hint 0.8s ease-out; }
+@keyframes hint { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 25% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); } }

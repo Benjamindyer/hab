@@ -1,16 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { activeRequest } from "./navigation";
 
+const base = { lastTouch: 1000, timeoutMs: 60000 };
+
 describe("activeRequest", () => {
   it("keeps the picked scene while the screen is in use", () => {
-    expect(activeRequest("music", 1000, 5000, 60000)).toBe("music");
+    expect(activeRequest({ ...base, requested: "music", now: 5000 })).toBe("music");
   });
 
   it("goes back to the default after the timeout", () => {
-    expect(activeRequest("music", 1000, 70000, 60000)).toBeNull();
+    expect(activeRequest({ ...base, requested: "music", now: 70000 })).toBeNull();
   });
 
   it("stays empty when nothing was picked", () => {
-    expect(activeRequest(null, 1000, 2000, 60000)).toBeNull();
+    expect(activeRequest({ ...base, requested: null, now: 2000 })).toBeNull();
+  });
+
+  it("stays on the picked scene however long it is left, while it is held", () => {
+    expect(activeRequest({ ...base, requested: "music", now: 9_000_000, hold: true })).toBe("music");
+  });
+
+  it("holding does nothing when no scene was picked", () => {
+    expect(activeRequest({ ...base, requested: null, now: 9_000_000, hold: true })).toBeNull();
   });
 });
