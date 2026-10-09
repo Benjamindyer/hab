@@ -19,10 +19,10 @@ const rect = (x: number, y: number, w: number, h: number): SVGRectElement => {
   return r;
 };
 
-const line = (d: string): SVGPathElement => {
+const line = (d: string, tone: string): SVGPathElement => {
   const p = document.createElementNS(NS, "path");
   p.setAttribute("d", d);
-  p.setAttribute("class", "flow");
+  p.setAttribute("class", `flow ${tone}`);
   return p;
 };
 
@@ -32,9 +32,9 @@ interface Node {
 }
 
 /** A box with a label and one big number. The unit follows the number inside the same text. */
-function node(label: string, x: number, y: number, w = 190): Node {
+function node(label: string, tone: string, [x, y, w]: readonly [number, number, number]): Node {
   const group = document.createElementNS(NS, "g");
-  group.setAttribute("class", "node");
+  group.setAttribute("class", `node ${tone}`);
   const big = text("v", x + 16, y + 88);
   const value = document.createTextNode("");
   const unit = document.createElementNS(NS, "tspan");
@@ -62,11 +62,11 @@ export function createDiagram(): Diagram {
   const element = document.createElementNS(NS, "svg");
   element.setAttribute("viewBox", "0 0 1000 450");
   element.setAttribute("preserveAspectRatio", "xMidYMid meet");
-  const flows = { solar: line("M190 90 H400 V190"), grid: line("M810 90 H600 V190"), car: line("M500 290 V330") };
-  const solar = node("SOLAR", 0, 30);
-  const grid = node("GRID", 810, 30);
-  const house = node("HOUSE", 400, 170, 200);
-  const car = node("CAR", 405, 330, 190);
+  const flows = { solar: line("M190 90 H400 V190", "solar"), grid: line("M810 90 H600 V190", "grid"), car: line("M500 290 V330", "car") };
+  const solar = node("SOLAR", "solar", [0, 30, 190]);
+  const grid = node("GRID", "grid", [810, 30, 190]);
+  const house = node("HOUSE", "house", [400, 170, 200]);
+  const car = node("CAR", "car", [405, 330, 190]);
   element.append(...Object.values(flows), solar.group, grid.group, house.group, car.group);
 
   return {
@@ -89,8 +89,8 @@ export interface Panel {
 }
 
 /** One of the four boxes under the picture: a label, a big number and a line of detail. */
-export function createPanel(label: string): Panel {
-  const element = el("div", "pn");
+export function createPanel(label: string, tone: string): Panel {
+  const element = el("div", `pn ${tone}`);
   const big = el("span", "big");
   const unit = el("small");
   const sub = el("span", "sub");

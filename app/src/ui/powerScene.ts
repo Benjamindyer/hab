@@ -1,4 +1,4 @@
-import { buildPowerView, type PowerView } from "../state/power";
+import { buildPowerView, rateTone, type PowerView } from "../state/power";
 import { powerNote } from "../state/powerNote";
 import { el } from "./dom";
 import { createDiagram, createPanel } from "./powerParts";
@@ -25,10 +25,10 @@ function carDetail(view: PowerView): string {
 export function createPowerScene(): Scene {
   const element = Object.assign(el("section", "scene"), { id: "s-power" });
   const diagram = createDiagram();
-  const rate = createPanel("Rate now");
-  const used = createPanel("Used today");
-  const solar = createPanel("Solar today");
-  const car = createPanel("Car");
+  const rate = createPanel("Rate now", "rate");
+  const used = createPanel("Used today", "used");
+  const solar = createPanel("Solar today", "solar");
+  const car = createPanel("Car", "car");
   const strip = el("div", "strip mono");
   strip.append(rate.element, used.element, solar.element, car.element);
   const speech = createSpeech();
@@ -41,6 +41,7 @@ export function createPowerScene(): Scene {
     update({ entities, config, speak }: SceneContext): void {
       const view = buildPowerView(entities, config.power);
       diagram.update(view);
+      rate.element.dataset["tone"] = rateTone(view);
       rate.update(one(view.rate), "p", rateDetail(view));
       used.update(pounds(view.cost), "", view.usage === null ? "" : `${one(view.usage)} kWh`);
       const total = view.solarToday === null ? null : view.solarToday + (view.solarLeft ?? 0);

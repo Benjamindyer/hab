@@ -1,19 +1,28 @@
-/* The energy screen: a picture of power moving, and four boxes of detail. */
+/* The energy screen: a picture of power moving, and four boxes of detail. Colour here says where power comes from. */
+#s-power { --solar: #e8d35c; --grid: #5aa9ff; --car: #5fd38d; --cheap: #5fd38d; }
+#s-power .solar { --tone: var(--solar); }
+#s-power .grid { --tone: var(--grid); }
+#s-power .car { --tone: var(--car); }
+#s-power .house { --tone: var(--ink); }
+#s-power .rate { --tone: var(--ink); }
+#s-power .rate[data-tone="cheap"] { --tone: var(--cheap); }
+#s-power .rate[data-tone="dear"] { --tone: var(--amber); }
+#s-power .used { --tone: var(--ink); }
 #s-power svg { position: absolute; left: 12vw; right: 12vw; top: 7vh; width: 76vw; height: 46vh; overflow: visible; }
-#s-power .node rect { fill: none; stroke: var(--faint); stroke-width: 1; }
-#s-power .node .k { fill: var(--dim); font-size: 14px; letter-spacing: 0.22em; }
-#s-power .node .v { fill: var(--ink); font-size: 52px; font-weight: 200; }
+#s-power .node rect { fill: color-mix(in srgb, var(--tone) 6%, transparent); stroke: color-mix(in srgb, var(--tone) 45%, var(--faint)); stroke-width: 1; }
+#s-power .node .k { fill: var(--tone); font-size: 14px; letter-spacing: 0.22em; }
+#s-power .node .v { fill: var(--tone); font-size: 52px; font-weight: 200; }
 #s-power .node .u { fill: var(--dim); font-size: 18px; }
 #s-power .flow { fill: none; stroke: var(--faint); stroke-width: 2; stroke-dasharray: 3 9; vector-effect: non-scaling-stroke; }
-#s-power .flow.on { stroke: var(--ice); animation: flow 1.2s linear infinite; }
+#s-power .flow.on { stroke: var(--tone); filter: drop-shadow(0 0 4px var(--tone)); animation: flow 1.2s linear infinite; }
 @keyframes flow { to { stroke-dashoffset: -24; } }
 
 #s-power .strip { position: absolute; left: 6vw; right: 6vw; bottom: calc(8vh + 11vmin); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2vw; }
-#s-power .pn { display: flex; flex-direction: column; gap: 0.8vmin; border-top: 1px solid var(--faint); padding-top: 1.4vmin; min-width: 0; }
-#s-power .pn .k { color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; }
-#s-power .pn .big { font-size: min(calc(var(--u) * 4.6), 4.2vw); font-weight: 200; }
+#s-power .pn { display: flex; flex-direction: column; gap: 0.8vmin; border-top: 1px solid var(--tone); padding-top: 1.4vmin; min-width: 0; }
+#s-power .pn .k { color: var(--tone); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; }
+#s-power .pn .big { color: var(--tone); font-size: min(calc(var(--u) * 4.6), 4.2vw); font-weight: 200; }
 #s-power .pn .big small { font-size: 0.4em; color: var(--dim); margin-left: 0.3em; }
 #s-power .pn .sub { color: var(--dim); font-size: calc(var(--u) * 1.6); }
 #s-power .gauge { height: 3px; background: var(--faint); }
 #s-power .gauge[hidden] { display: none; }
-#s-power .gauge b { display: block; height: 100%; background: var(--ice); transition: width 1s ease; }
+#s-power .gauge b { display: block; height: 100%; background: var(--tone); transition: width 1s ease; }
