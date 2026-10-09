@@ -5,6 +5,7 @@ import { createPageFollower, type MusicPage } from "../state/musicPage";
 import { createLibraryStore } from "../storage/libraryStore";
 import { el, setText } from "./dom";
 import { createControls, type MusicState } from "./musicControls";
+import { createImmersiveView } from "./immersiveView";
 import { createLibraryPanel } from "./musicLibrary";
 import { createNowPanel } from "./musicNow";
 import { buildPages } from "./musicPages";
@@ -35,6 +36,7 @@ export function createMusicScene(): Scene {
   const layout = buildPages(now, picker, panel, () => go("speakers"));
   const pager = createPager(layout.pages);
   element.append(pager.element, pager.tabs, note, credit);
+  const immersive = createImmersiveView(element);
   const follower = createPageFollower();
   let firstDraw = true;
 
@@ -51,6 +53,7 @@ export function createMusicScene(): Scene {
     panel.update(library.get(), music.favourites, context.haUrl);
     const line = musicLine(context, view, history);
     now.update(view);
+    immersive.update(view);
     setText(note, sender.notice() ?? line.text);
     credit.hidden = !line.fromDatabase || sender.notice() !== null;
   };

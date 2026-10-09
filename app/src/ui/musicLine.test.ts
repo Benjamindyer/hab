@@ -56,6 +56,13 @@ describe("musicLine", () => {
     expect(requests).toHaveLength(0);
   });
 
+  it("leaves remaster and edit labels out of the title in the facts", () => {
+    const info: MusicInfo = { releaseYear: 1997, artistFrom: "United Kingdom", artistCity: "London", artistKind: "group", artistYear: 1990, genres: [] };
+    const lookup: MusicInfoLookup = { get: () => ({ status: "ready", info }) };
+    const result = musicLine(contextWith([], lookup), { ...view, title: "Song 2 - 2012 Remaster" }, createListeningHistory());
+    expect(result.text).toContain("Song 2 was first released in 1997.");
+  });
+
   it("does not ask the model while facts are being fetched or when there are none", () => {
     const requests: CommentRequest[] = [];
     const pending = musicLine(contextWith(requests, { get: () => ({ status: "pending" }) }), view, createListeningHistory());

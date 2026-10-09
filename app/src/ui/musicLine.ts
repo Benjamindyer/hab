@@ -2,6 +2,7 @@ import type { ListeningHistory } from "../state/listening";
 import type { MusicView } from "../state/music";
 import { factsSentence } from "../state/musicInfo";
 import { musicFacts, musicKey, musicNote, partOfDay, type MusicExtras } from "../state/musicNote";
+import { cleanTitle } from "../music/parse";
 import type { SceneContext } from "./scene";
 
 export interface MusicLine {
@@ -24,7 +25,7 @@ export function musicLine(context: SceneContext, view: MusicView, history: Liste
   if (context.musicInfo) {
     // With music facts on, the screen shows facts or the fixed line. The model is not asked, which also saves its cost.
     const found = context.musicInfo.get(view.title, view.artist);
-    const facts = found.status === "ready" ? factsSentence(view.title, view.artist, found.info) : null;
+    const facts = found.status === "ready" ? factsSentence(view.title ? cleanTitle(view.title) : null, view.artist, found.info) : null;
     return facts ? { text: facts, fromDatabase: true } : { text: fallback, fromDatabase: false };
   }
   const request = { kind: "music" as const, key: musicKey(view, extras), fallback, facts: musicFacts(view, extras) };
