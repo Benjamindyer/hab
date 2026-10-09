@@ -13,6 +13,10 @@ export interface DayPoint {
   low: number | null;
   rain: number;
   condition: string;
+  humidity: number | null;
+  windSpeed: number | null;
+  windBearing: number | null;
+  uv: number | null;
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
@@ -44,6 +48,31 @@ export function parseDaily(raw: unknown): DayPoint[] {
     const at = dateOf(item);
     const high = num(item["temperature"]);
     if (!at || high === null) return [];
-    return [{ at, high, low: num(item["templow"]), rain: num(item["precipitation"]) ?? 0, condition: String(item["condition"] ?? "") }];
+    return [{
+      at,
+      high,
+      low: num(item["templow"]),
+      rain: num(item["precipitation"]) ?? 0,
+      condition: String(item["condition"] ?? ""),
+      humidity: num(item["humidity"]),
+      windSpeed: num(item["wind_speed"]),
+      windBearing: num(item["wind_bearing"]),
+      uv: num(item["uv_index"]),
+    }];
   });
+}
+
+const sameDay = (a: Date, b: Date): boolean => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+/** The hours of the forecast that fall on a given day. */
+export function hoursOnDay(hours: HourPoint[], day: Date): HourPoint[] {
+  return hours.filter((h) => sameDay(h.at, day));
+}
+
+/** "Today", "Tomorrow", or the weekday and date, for the title of a day. */
+export function dayTitle(day: Date, now: Date): string {
+  if (sameDay(day, now)) return "Today";
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  if (sameDay(day, tomorrow)) return "Tomorrow";
+  return day.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 }

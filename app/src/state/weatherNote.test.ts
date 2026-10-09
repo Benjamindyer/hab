@@ -6,7 +6,7 @@ import type { WeatherView } from "./weatherView";
 const hour = (h: number, rain: number): HourPoint => ({ at: new Date(2026, 9, 9, h), temp: 15, rain, condition: "x", windSpeed: null });
 const base: WeatherView = {
   temp: 17.2, code: "rainy", condition: "rainy", high: 17.2, low: 13, humidity: 83, pressure: 1010, windSpeed: 48.6, windFrom: "WSW",
-  windBearing: 254, uv: 1, hours: [], days: [{ at: new Date(2026, 9, 9), high: 17, low: 13, rain: 0, condition: "rainy" }, { at: new Date(2026, 9, 10), high: 15.4, low: 11, rain: 0, condition: "sunny" }],
+  windBearing: 254, uv: 1, hours: [], days: [{ at: new Date(2026, 9, 9), high: 17, low: 13, rain: 0, condition: "rainy", humidity: null, windSpeed: null, windBearing: null, uv: null }, { at: new Date(2026, 9, 10), high: 15.4, low: 11, rain: 0, condition: "sunny", humidity: null, windSpeed: null, windBearing: null, uv: null }],
   sunrise: null, sunset: null,
 };
 const now = new Date(2026, 9, 9, 16, 20);

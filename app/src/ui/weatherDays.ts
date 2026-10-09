@@ -9,9 +9,11 @@ const dayName = (d: DayPoint, today: Date): string => {
 };
 
 /** One column for a day: its name, a symbol, a bar from the low to the high on a shared scale, and the rain if any. */
-function column(day: DayPoint, today: Date, low: number, high: number): HTMLElement {
+function column(day: DayPoint, today: Date, scale: { low: number; high: number }, open: () => void): HTMLElement {
+  const { low, high } = scale;
   const span = high - low || 1;
-  const box = el("div", "day");
+  const box = el("button", "day");
+  box.addEventListener("click", open);
   const range = el("div", "range");
   const bar = range.appendChild(el("i"));
   bar.style.left = `${(((day.low ?? day.high) - low) / span) * 100}%`;
@@ -25,10 +27,10 @@ function column(day: DayPoint, today: Date, low: number, high: number): HTMLElem
   return box;
 }
 
-/** The next few days side by side, sharing one temperature scale so they can be compared at a glance. */
-export function dayColumns(days: DayPoint[], today: Date): HTMLElement[] {
+/** The next few days side by side, sharing one temperature scale so they can be compared at a glance. Touching one opens it. */
+export function dayColumns(days: DayPoint[], today: Date, open: (index: number) => void): HTMLElement[] {
   if (days.length === 0) return [];
   const low = Math.min(...days.map((d) => d.low ?? d.high));
   const high = Math.max(...days.map((d) => d.high));
-  return days.map((d) => column(d, today, low, high));
+  return days.map((d, i) => column(d, today, { low, high }, () => open(i)));
 }

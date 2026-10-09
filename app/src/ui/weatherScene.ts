@@ -3,6 +3,7 @@ import { weatherFacts, weatherKey, weatherNote } from "../state/weatherNote";
 import { el, renderWhenChanged, setText } from "./dom";
 import type { Scene, SceneContext } from "./scene";
 import { hourlyChartSvg } from "./weatherChart";
+import { createDayOverlay } from "./weatherDetail";
 import { dayColumns } from "./weatherDays";
 import { createCurrent, createDetails } from "./weatherParts";
 
@@ -18,7 +19,8 @@ export function createWeatherScene(): Scene {
   const chart = el("div", "w-chart");
   const days = el("div", "w-days");
   const note = el("div", "note");
-  element.append(top, chart, days, note);
+  const overlay = createDayOverlay();
+  element.append(top, chart, days, note, overlay.element);
 
   return {
     id: "weather",
@@ -36,7 +38,8 @@ export function createWeatherScene(): Scene {
         svg.innerHTML = hourlyChartSvg(view.hours);
         return [svg];
       });
-      renderWhenChanged(days, `${now.getDate()}|${view.days.map((d) => `${d.high}${d.low}${d.rain}${d.condition}`).join("|")}`, () => dayColumns(view.days, now));
+      renderWhenChanged(days, `${now.getDate()}|${view.days.map((d) => `${d.high}${d.low}${d.rain}${d.condition}`).join("|")}`, () => dayColumns(view.days, now, overlay.open));
+      overlay.update(view.days, data.hourly, now);
       const request = { kind: "weather" as const, key: weatherKey(view, now), fallback: weatherNote(view, config.personality), facts: weatherFacts(view, now), hold: data.status === "loading" };
       setText(note, commentary.line(request, config.personality));
     },
