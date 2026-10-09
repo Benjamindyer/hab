@@ -28,7 +28,13 @@
 #s-weather .hc-temp.below { margin-top: 1.2vmin; }
 #s-weather .hc-temp.edge-left { transform: translate(-30%, 0); }
 #s-weather .hc-temp.edge-right { transform: translate(-70%, 0); }
-#s-weather .hc-rain { position: absolute; width: 1.2%; background: var(--ice); opacity: 0.45; transform: translateX(-50%); }
+#s-weather .hc-rain { position: absolute; width: 1.4%; background: var(--ice); opacity: 0.55; transform: translateX(-50%); }
+#s-weather .hc-baseline { position: absolute; left: 0; right: 0; height: 1px; background: #2b2f35; }
+#s-weather .hc-mm { position: absolute; margin-left: 1.6%; color: var(--ice); font-size: calc(var(--u) * 1.6); white-space: nowrap; }
+#s-weather .hc-dry { position: absolute; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.6); letter-spacing: 0.18em; text-transform: uppercase; }
+#s-weather .hc-wind { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 0.6vmin; font-size: calc(var(--u) * 1.8); }
+#s-weather .hc-arrow { display: inline-block; width: calc(var(--u) * 2.2); height: calc(var(--u) * 2.2); color: var(--ice); }
+#s-weather .hc-arrow svg { width: 100%; height: 100%; display: block; }
 #s-weather .hc-hour { position: absolute; bottom: 0; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.5); letter-spacing: 0.1em; }
 
 #s-weather .w-days { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.4vmin; }
@@ -62,3 +68,4 @@
 #s-weather .d-strip { margin-top: 2vh; }
 #s-weather .d-strip .day { opacity: 0.45; transition: opacity 0.3s ease; }
 #s-weather .d-strip .day.sel { opacity: 1; border-top-color: var(--ice); }
+#s-weather .hc-dry.at-end { right: 0; left: auto; transform: none; opacity: 0.7; }

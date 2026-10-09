@@ -8,7 +8,7 @@ const weather: Entity = {
   id: "weather.home", state: "rainy",
   attributes: { temperature: 17.2, humidity: 83, pressure: 1010.7, wind_speed: 48.6, wind_bearing: 254.2, uv_index: 0.9 },
 };
-const hour = (h: number, temp: number): HourPoint => ({ at: new Date(2026, 9, 9, h), temp, rain: 0, condition: "cloudy", windSpeed: null });
+const hour = (h: number, temp: number): HourPoint => ({ at: new Date(2026, 9, 9, h), temp, rain: 0, condition: "cloudy", windSpeed: null, windBearing: null });
 const day = (d: number, high: number, low: number | null = 10): DayPoint => ({ at: new Date(2026, 9, d, 11), high, low, rain: 0, condition: "sunny", humidity: null, windSpeed: null, windBearing: null, uv: null });
 const sun: Entity = { id: "sun.sun", state: "above_horizon", attributes: { next_rising: "2026-10-10T06:19:47+00:00", next_setting: "2026-10-09T17:25:32+00:00" } };
 
@@ -32,7 +32,7 @@ describe("buildWeatherView", () => {
   });
 
   it("starts the hours from the current hour and shows at most a day of them", () => {
-    const hourly = Array.from({ length: 40 }, (_, i) => ({ at: new Date(2026, 9, 9, 10 + i), temp: i, rain: 0, condition: "x", windSpeed: null }));
+    const hourly = Array.from({ length: 40 }, (_, i) => ({ at: new Date(2026, 9, 9, 10 + i), temp: i, rain: 0, condition: "x", windSpeed: null, windBearing: null }));
     const view = buildWeatherView(weather, { hourly, daily: [] }, undefined, now);
     expect(view.hours).toHaveLength(24);
     expect(view.hours[0]?.at.getHours()).toBe(16);

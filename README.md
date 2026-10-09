@@ -39,7 +39,7 @@ With no settings saved, HAB works out what you have and fills in its own: the fi
 
 ### The weather screen
 
-Touch the outside temperature on the home screen, or choose **Weather** in the menu. It shows the temperature now, wind, humidity, pressure, UV and the next sunrise or sunset, a chart of the next day hour by hour (temperature and rain), and the next five days. Touch a day to open it: wind, humidity, UV and rain for the day, and its hour-by-hour chart when that day is within the next two days. Swipe left or right for the other days, and touch to close. The forecast comes from your Home Assistant weather entity. It needs a weather integration that supports forecasts, such as the default Met.no.
+Touch the outside temperature on the home screen, or choose **Weather** in the menu. It shows the temperature now, wind, humidity, pressure, UV and the next sunrise or sunset, a chart of the next day hour by hour (the temperature curve, rain bars, and the wind with an arrow showing where it blows), and the next five days. Touch a day to open it: wind, humidity, UV and rain for the day, and its hour-by-hour chart when that day is within the next two days. Swipe left or right for the other days, and touch to close. The forecast comes from your Home Assistant weather entity. It needs a weather integration that supports forecasts, such as the default Met.no.
 
 ### Controlling music by touch
 

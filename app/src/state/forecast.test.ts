@@ -3,11 +3,12 @@ import { dayTitle, hoursOnDay, parseDaily, parseHourly } from "./forecast";
 
 describe("parseHourly", () => {
   it("reads the time, temperature, rain, condition and wind", () => {
-    const [first] = parseHourly([{ datetime: "2026-10-09T16:00:00+00:00", temperature: 17, precipitation: 0.4, condition: "rainy", wind_speed: 43.6 }]);
+    const [first] = parseHourly([{ datetime: "2026-10-09T16:00:00+00:00", temperature: 17, precipitation: 0.4, condition: "rainy", wind_speed: 43.6, wind_bearing: 269.5 }]);
     expect(first?.temp).toBe(17);
     expect(first?.rain).toBe(0.4);
     expect(first?.condition).toBe("rainy");
     expect(first?.windSpeed).toBe(43.6);
+    expect(first?.windBearing).toBe(269.5);
     expect(first?.at.toISOString()).toBe("2026-10-09T16:00:00.000Z");
   });
 
@@ -41,7 +42,7 @@ describe("parseDaily", () => {
 });
 
 describe("hoursOnDay and dayTitle", () => {
-  const hour = (d: number, h: number) => ({ at: new Date(2026, 9, d, h), temp: 10, rain: 0, condition: "x", windSpeed: null });
+  const hour = (d: number, h: number) => ({ at: new Date(2026, 9, d, h), temp: 10, rain: 0, condition: "x", windSpeed: null, windBearing: null });
   const now = new Date(2026, 9, 9, 16);
 
   it("picks the hours that fall on a day", () => {

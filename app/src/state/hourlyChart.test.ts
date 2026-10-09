@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { HourPoint } from "./forecast";
 import { chartGeometry } from "./hourlyChart";
 
-const hour = (h: number, temp: number, rain = 0): HourPoint => ({ at: new Date(2026, 9, 9, h), temp, rain, condition: "x", windSpeed: null });
+const hour = (h: number, temp: number, rain = 0, wind: number | null = null): HourPoint => ({ at: new Date(2026, 9, 9, h), temp, rain, condition: "x", windSpeed: wind, windBearing: wind === null ? null : 270 });
 const box = { width: 1000, height: 200, barHeight: 40, pad: 20 };
 
 describe("chartGeometry", () => {
@@ -25,6 +25,11 @@ describe("chartGeometry", () => {
   it("labels every third hour", () => {
     const g = chartGeometry([hour(14, 1), hour(15, 1), hour(16, 1), hour(17, 1), hour(18, 1)], box);
     expect(g.labels.map((l) => l.text)).toEqual(["15", "18"]);
+  });
+
+  it("gives the wind at every third hour that has one", () => {
+    const g = chartGeometry([hour(14, 1, 0, 10), hour(15, 1, 0, 20), hour(16, 1, 0, 30), hour(17, 1, 0, null), hour(18, 1, 0, 40)], box);
+    expect(g.winds).toEqual([{ x: 250, speed: 20, bearing: 270 }, { x: 1000, speed: 40, bearing: 270 }]);
   });
 
   it("copes with no hours, one hour and a flat line", () => {

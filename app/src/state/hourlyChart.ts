@@ -18,6 +18,8 @@ export interface ChartGeometry {
   bars: ChartBar[];
   /** Every third hour, for the axis. */
   labels: { x: number; text: string }[];
+  /** The wind at every third hour, for the wind row. */
+  winds: { x: number; speed: number; bearing: number | null }[];
   /** The warmest and coolest points, to label. */
   warmest: ChartPoint | null;
   coolest: ChartPoint | null;
@@ -37,7 +39,7 @@ const MIN_RAIN_SCALE_MM = 2;
 
 /** Works out where everything goes on the hourly chart, so drawing it is only a matter of joining the points. */
 export function chartGeometry(hours: HourPoint[], box: ChartBox): ChartGeometry {
-  if (hours.length === 0) return { points: [], bars: [], labels: [], warmest: null, coolest: null };
+  if (hours.length === 0) return { points: [], bars: [], labels: [], winds: [], warmest: null, coolest: null };
   const temps = hours.map((h) => h.temp);
   const low = Math.min(...temps);
   const span = Math.max(...temps) - low || 1;
@@ -48,6 +50,7 @@ export function chartGeometry(hours: HourPoint[], box: ChartBox): ChartGeometry 
     points,
     bars: hours.map((h, i) => ({ x: i * step, height: (h.rain / maxRain) * box.barHeight, mm: h.rain })),
     labels: hours.flatMap((h, i) => (h.at.getHours() % 3 === 0 ? [{ x: i * step, text: String(h.at.getHours()).padStart(2, "0") }] : [])),
+    winds: hours.flatMap((h, i) => (h.at.getHours() % 3 === 0 && h.windSpeed !== null ? [{ x: i * step, speed: h.windSpeed, bearing: h.windBearing }] : [])),
     warmest: points.reduce((a, b) => (b.temp > a.temp ? b : a)),
     coolest: points.reduce((a, b) => (b.temp < a.temp ? b : a)),
   };

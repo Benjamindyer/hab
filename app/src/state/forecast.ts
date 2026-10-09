@@ -5,6 +5,7 @@ export interface HourPoint {
   rain: number;
   condition: string;
   windSpeed: number | null;
+  windBearing: number | null;
 }
 
 export interface DayPoint {
@@ -36,7 +37,7 @@ export function parseHourly(raw: unknown): HourPoint[] {
     const at = dateOf(item);
     const temp = num(item["temperature"]);
     if (!at || temp === null) return [];
-    return [{ at, temp, rain: num(item["precipitation"]) ?? 0, condition: String(item["condition"] ?? ""), windSpeed: num(item["wind_speed"]) }];
+    return [{ at, temp, rain: num(item["precipitation"]) ?? 0, condition: String(item["condition"] ?? ""), windSpeed: num(item["wind_speed"]), windBearing: num(item["wind_bearing"]) }];
   });
 }
 
