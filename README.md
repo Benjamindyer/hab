@@ -2,7 +2,7 @@
 
 A screen and assistant front end for Home Assistant. It is made for a wall tablet: a calm, designed display for the clock, weather, music and (soon) timers, power and home controls, with a personality you can tune. The look is retro sci-fi: monochrome, with a four-bar "slab" that reacts to voice and music.
 
-**Status: early development.** Ambient and Music screens work with live data. Timers, home controls, power and voice are designed but not built. Not yet tested by anyone but the author.
+**Status: early development.** Home, Weather, Energy and Music screens work with live data. Timers, home controls and voice are designed but not built. Not yet tested by anyone but the author.
 
 ## Install
 
@@ -36,6 +36,10 @@ HAB has two parts that install together: a Home Assistant integration (served by
 ### What you get at first
 
 With no settings saved, HAB works out what you have and fills in its own: the first weather entity, the first heating (climate) entity and the first Spotify player. You get the ambient screen and, if Spotify is set up in Home Assistant, the Music screen. It never turns on a language model by itself.
+
+### The energy screen
+
+Choose **Energy** in the menu. It shows solar, grid, house and car power, with dotted lines that move while power flows, plus the electricity rate now, what today has cost, solar made today and the car's charge. Name the sensors in a `power` section of `hab.config.json` (see `hab.config.example.json`). Every sensor is optional, and a missing one shows `--`. The house figure is grid plus solar, so surplus solar sent to the grid is not subtracted. There is no Setup page entry for these yet.
 
 ### The weather screen
 
