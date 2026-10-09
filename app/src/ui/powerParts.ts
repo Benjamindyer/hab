@@ -80,6 +80,17 @@ const setLevel = (icon: SVGElement, level: number): void => {
   icon.style.setProperty("--level", String(Math.max(0, Math.min(1, level))));
 };
 
+/** A tiny octopus drawn for HAB, with the supplier's name beside it. It is not the supplier's own logo. */
+function supplierMark(x: number, y: number, name: string): SVGGElement {
+  const g = svgEl("g", { transform: `translate(${x} ${y})` }, "supplier") as SVGGElement;
+  const legs = ["M-5 2 Q-7 8 -4 9", "M-2 3 Q-3 9 0 10", "M2 3 Q3 9 0 10", "M5 2 Q7 8 4 9"];
+  g.append(svgEl("circle", { cx: 0, cy: -3, r: 6 }, "head"), ...legs.map((d) => svgEl("path", { d }, "leg")));
+  const label = svgEl("text", { x: 14, y: 5 }, "name");
+  label.textContent = name;
+  g.append(label);
+  return g;
+}
+
 const SOLAR_FULL_KW = 1.5;
 const GRID_FULL_KW = 3;
 
@@ -101,7 +112,7 @@ export function createDiagram(): Diagram {
   const sun = sunIcon(150, 66);
   const pulse = gridIcon(960, 66);
   solar.group.append(sun);
-  grid.group.append(pulse);
+  grid.group.append(pulse, supplierMark(830, 128, "OCTOPUS ENERGY"));
   element.append(...Object.values(flows), solar.group, grid.group, house.group, car.group);
 
   return {
