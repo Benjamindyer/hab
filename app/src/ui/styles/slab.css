@@ -1,13 +1,13 @@
 #slab {
   position: absolute;
   display: flex;
-  gap: calc(var(--u) * 0.35);
+  gap: calc(var(--u) * 0.25);
   transition: all 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
   /* Small and out of the way in the corner, on every screen. */
   left: 6vw;
   bottom: 8vh;
-  width: 5vmin;
-  height: 10.5vmin;
+  width: 3.4vmin;
+  height: 7.2vmin;
   align-items: flex-end;
 }
 
@@ -16,8 +16,8 @@
   flex: 1;
   position: relative;
   background: linear-gradient(180deg, #d9d6cc 0%, #8c8a84 55%, #4a4a47 100%);
-  border-radius: calc(var(--u) * 0.25);
-  box-shadow: 0 0 calc(var(--u) * 2) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
+  border-radius: calc(var(--u) * 0.2);
+  box-shadow: 0 0 calc(var(--u) * 1.5) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
 }
 
 #slab i::after {
@@ -38,7 +38,7 @@ body[data-voice="responding"] #slab {
   top: 34vh;
   bottom: auto;
   transform: translate(-50%, -50%);
-  width: 26vmin;
-  height: 34vmin;
+  width: 20vmin;
+  height: 26vmin;
   align-items: center;
 }
