@@ -35,13 +35,6 @@ describe("buildInstructions", () => {
     expect(buildInstructions({ ...base, knowledge: true })).not.toContain("no year, decade, genre");
   });
 
-  it("lets a music line use database facts, and keeps other claims out", () => {
-    const withDatabase = { track: "Rocks", firstReleasedYear: 1994, artistFrom: "United Kingdom" };
-    const text = buildInstructions({ kind: "music", facts: withDatabase, dials: { humour: 0, honesty: 0 }, name: "X" });
-    expect(text).toContain("come from a music database and are reliable");
-    expect(text).toContain("Do not add any other facts about the music");
-  });
-
   it("never lets knowledge into a home line", () => {
     const text = buildInstructions({ kind: "ambient", facts, dials: { humour: 0, honesty: 0 }, name: "X", knowledge: true });
     expect(text).toContain("no year, decade, genre");

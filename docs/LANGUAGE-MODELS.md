@@ -13,7 +13,7 @@ It does **not** control your house, answer questions or speak. It writes one sho
 When something changes, HAB sends a short list of facts and some instructions. For example:
 
 - the time of day, the room name and room temperature, the outside temperature and the weather,
-- the track name, artist, album and speaker, when music is playing, and how many tracks in a row share an artist,
+- the track name, artist, album and speaker, when music is playing, and how many tracks in a row share an artist (not when Music facts is on, because then the model is not used for the music line),
 - your Humour and Honesty settings and the assistant's name.
 
 It sends nothing else: no camera images, no recordings, no list of your devices, no passwords or keys.
@@ -30,13 +30,16 @@ The facts go to **whichever model you set up in Home Assistant**. A cloud model 
 
 A model can still be odd or wrong in ways these checks do not catch. If a line looks wrong, the fixed line is one setting away (see "Turning it off").
 
-## Music facts from MusicBrainz (optional, off by default)
+## Music facts from MusicBrainz (optional, off by default, needs no language model)
 
-Turn on **Music facts** in Setup and HAB looks up each track in [MusicBrainz](https://musicbrainz.org), a free open music database. It finds the year the track first came out, where the artist is from, when the group formed (or the person was born) and the genre. HAB shows these beside the cover, and the model may use them, so its line can be interesting **and** true.
+Turn on **Music facts** in Setup (under Music) and HAB looks up each track in [MusicBrainz](https://musicbrainz.org), a free open music database. It finds the year the track first came out, where the artist is from, when the group formed (or the person was born) and the genres. HAB shows them in plain words under the cover, credited to MusicBrainz:
 
-- **What is sent:** only the track title and the artist name, to musicbrainz.org. Nothing else. Answers are kept in the browser, so each track is looked up once.
-- **How a match is chosen:** a close match for the title and artist, and the earliest release date, because live versions and re-releases come later. If there is no close match, HAB shows nothing rather than guessing.
-- **Limits:** a database is only as good as its entries, and two songs with the same title by the same artist can be confused. Lookups run one a second, so facts appear a few seconds after a track starts.
+> There She Goes was first released in 1990. The La's formed in 1983 in Liverpool, United Kingdom. Genres: britpop, indie rock, jangle pop.
+
+- **No language model is used for the music line when this is on**, so it costs nothing and says only what the database says. If the database knows nothing about a track, the plain fixed line shows instead.
+- **What is sent:** only the track title and the artist name, to musicbrainz.org. Answers are kept in the browser, so each track is looked up once.
+- **How a match is chosen:** a close match for the title and artist, and the earliest release date MusicBrainz has for it. If there is no close match, HAB shows nothing rather than guessing.
+- **Limits:** a database is only as good as its entries. The release year can be a later release if the original is filed as a different recording, and two songs with the same title by the same artist can be confused. Lookups run one a second, so facts appear a few seconds after a track starts.
 
 ## Music knowledge (optional, off by default)
 

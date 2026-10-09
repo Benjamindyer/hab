@@ -38,20 +38,13 @@
 }
 
 /* The details sit to the right of the record and take the room that is left. */
-#s-music .info { position: absolute; left: calc(6vw + var(--art) * 1.58 + 3vw); right: 6vw; top: 8vh; height: calc(var(--art) + 4vh); min-width: 0; overflow: hidden; }
+#s-music .info { position: absolute; left: calc(6vw + var(--art) * 1.58 + 3vw); right: 6vw; top: 8vh; min-width: 0; }
 #s-music .src { color: var(--dim); font-size: calc(var(--u) * 1.7); letter-spacing: 0.3em; text-transform: uppercase; }
 #s-music .ttl { font-weight: 200; font-size: min(calc(var(--u) * 7), 5vw); line-height: 1.08; margin-top: 1.4vmin; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 #s-music .artist { color: var(--dim); font-weight: 300; font-size: min(calc(var(--u) * 3.2), 2.4vw); margin-top: 1.4vmin; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-#s-music .readouts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6vmin 3vmin; margin-top: 3vmin; }
-#s-music .readout-pair.wide { grid-column: 1 / -1; }
-#s-music .readout-pair { display: flex; flex-direction: column; gap: 0.5vmin; min-width: 0; }
-#s-music .readout-label { color: var(--dim); font-size: calc(var(--u) * 1.5); letter-spacing: 0.22em; text-transform: uppercase; }
-#s-music .readout-value { font-weight: 300; font-size: min(calc(var(--u) * 2.6), 2vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#s-music .readout-credit { grid-column: 1 / -1; color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
-
 /* The player spans the whole screen under the cover: a long progress line, then big controls. */
-#s-music .player { position: absolute; left: 6vw; right: 6vw; top: calc(8vh + var(--art) + 6.5vh); }
+#s-music .player { position: absolute; left: 6vw; right: 6vw; top: calc(8vh + var(--art) + 5vh); }
 #s-music .prog { position: relative; height: calc(var(--u) * 0.8); background: #23262b; }
 #s-music .prog b { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ice); }
 #s-music .times { display: flex; justify-content: space-between; color: var(--dim); font-size: calc(var(--u) * 1.8); margin-top: 1.2vmin; }
@@ -116,3 +109,6 @@
 
 #s-music .note { position: absolute; z-index: 2; pointer-events: none; left: 50%; bottom: 9vh; transform: translateX(-50%); width: min(70vw, 120vmin); text-align: center; font-size: calc(var(--u) * 3.1); font-weight: 300; line-height: 1.35; min-height: 2.8em; }
 
+
+#s-music .note-credit { position: absolute; z-index: 2; left: 50%; bottom: 5vh; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; pointer-events: none; }
+#s-music .note-credit[hidden] { display: none; }

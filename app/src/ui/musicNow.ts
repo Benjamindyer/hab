@@ -1,6 +1,5 @@
 import { el, mmss, renderWhenChanged, setText } from "./dom";
 import type { MusicView } from "../state/music";
-import { readoutsFor, type MusicInfo } from "../state/musicInfo";
 import { createRecord } from "./record";
 
 export interface NowHandlers {
@@ -11,7 +10,7 @@ export interface NowHandlers {
 
 export interface NowPanel {
   elements: HTMLElement[];
-  update(view: MusicView, info: MusicInfo | null): void;
+  update(view: MusicView): void;
 }
 
 const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>';
@@ -61,29 +60,12 @@ function renderVolume(bars: HTMLElement, level: number): void {
   );
 }
 
-function renderReadouts(box: HTMLElement, info: MusicInfo | null): void {
-  const items = readoutsFor(info);
-  renderWhenChanged(box, JSON.stringify(items), () =>
-    items.length === 0
-      ? []
-      : [
-          ...items.map((item) => {
-            const pair = el("div", item.label === "From" || item.label === "Genre" ? "readout-pair wide" : "readout-pair");
-            pair.append(el("span", "readout-label", item.label), el("span", "readout-value", item.value));
-            return pair;
-          }),
-          el("div", "readout-credit", "Facts from MusicBrainz"),
-        ],
-  );
-}
-
 /** The part of the music screen that shows the cover, the record, the track and its controls. */
 export function createNowPanel(handlers: NowHandlers): NowPanel {
   const record = createRecord();
   const source = el("div", "src");
   const title = el("div", "ttl");
   const artist = el("div", "artist");
-  const readouts = el("div", "readouts");
   const fill = el("b");
   const position = el("span", "", "0:00");
   const duration = el("span", "", "0:00");
@@ -91,7 +73,7 @@ export function createNowPanel(handlers: NowHandlers): NowPanel {
   const bars = volumeBars(handlers.onVolume);
 
   const info = el("div", "info");
-  info.append(source, title, artist, readouts);
+  info.append(source, title, artist);
   const progress = el("div", "prog");
   progress.append(fill);
   const times = el("div", "times mono");
@@ -107,12 +89,11 @@ export function createNowPanel(handlers: NowHandlers): NowPanel {
 
   return {
     elements: [record.disc, record.sleeve, info, player],
-    update(view, facts) {
+    update(view) {
       record.update(view);
       setText(source, sourceLabel(view));
       setText(title, view.title ?? "");
       setText(artist, view.artist ?? "");
-      renderReadouts(readouts, facts);
       fill.style.width = `${progressPercent(view)}%`;
       setText(position, mmss(view.position ?? 0));
       setText(duration, mmss(view.duration ?? 0));

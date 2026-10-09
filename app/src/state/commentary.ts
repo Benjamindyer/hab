@@ -1,7 +1,7 @@
 import { isAcceptable } from "./guard";
 import type { Facts, TextGenerator } from "./llm";
 import type { Personality } from "./personality";
-import { buildInstructions, hasDatabaseFacts, type CommentKind } from "./prompt";
+import { buildInstructions, type CommentKind } from "./prompt";
 
 export interface CommentRequest {
   kind: CommentKind;
@@ -62,7 +62,7 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
   async function ask(request: CommentRequest, dials: Personality, key: string): Promise<void> {
     if (!generator) return;
     const instructions = buildInstructions({ kind: request.kind, facts: request.facts, dials, name, knowledge: musicKnowledge });
-    const ownKnowledge = musicKnowledge && request.kind === "music" && !hasDatabaseFacts(request.facts);
+    const ownKnowledge = musicKnowledge && request.kind === "music";
     try {
       for (let attempt = 0; attempt < attempts; attempt++) {
         const text = (await generator.generate({ taskName: `HAB ${request.kind} comment`, instructions })).trim();

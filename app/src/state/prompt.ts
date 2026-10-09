@@ -39,14 +39,6 @@ export interface InstructionParts {
   knowledge?: boolean;
 }
 
-const DATABASE_KEYS = ["firstReleasedYear", "artistFrom", "artistKind", "genres"];
-
-/** True when the facts include details about the music taken from a music database. */
-export const hasDatabaseFacts = (facts: Facts): boolean => DATABASE_KEYS.some((key) => key in facts);
-
-const DATABASE_MUSIC =
-  "Some facts about the music come from a music database and are reliable: you may use them. Do not add any other facts about the music, such as a year, genre, origin or band members that are not in the facts. An opinion is fine.";
-
 const FACTS_ONLY_MUSIC =
   "Do not state anything about a song or artist that is not in the facts: no year, decade, genre, album or band members. An opinion is fine.";
 const KNOWLEDGE_MUSIC =
@@ -54,7 +46,7 @@ const KNOWLEDGE_MUSIC =
 
 /** The instructions sent to the model. Facts are given as data, and the rules forbid inventing more. */
 export function buildInstructions({ kind, facts, dials, name, knowledge = false }: InstructionParts): string {
-  const music = kind === "music" && hasDatabaseFacts(facts) ? DATABASE_MUSIC : kind === "music" && knowledge ? KNOWLEDGE_MUSIC : FACTS_ONLY_MUSIC;
+  const music = kind === "music" && knowledge ? KNOWLEDGE_MUSIC : FACTS_ONLY_MUSIC;
   return [
     `You are ${name}, the assistant in a family home. You write one short line for the home screen.`,
     SITUATION[kind],

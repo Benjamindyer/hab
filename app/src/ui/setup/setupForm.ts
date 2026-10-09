@@ -39,6 +39,8 @@ function music(draft: Draft, entities: EntityStore): HTMLElement {
     row("Spotify player", player),
     row("Speaker to start on", defaultRoom, "One of your Spotify devices."),
     row("Favourites", createFavouritesEditor(draft), "Shown first on the library page."),
+    row("Music facts", checkboxInput("Show facts about the track and artist", draft.musicLookup, (v) => { draft.musicLookup = v; }),
+      "Shows the release year, where the artist is from and the genres, under the cover. They come from MusicBrainz, a free open music database, and the track and artist names are sent to musicbrainz.org. Needs no language model."),
     devices,
   );
   return box;
@@ -51,8 +53,6 @@ function extras(draft: Draft, entities: EntityStore): HTMLElement {
     row("Voice device", selectInput(entityOptions(all, "assist_satellite"), draft.satellite, (v) => { draft.satellite = v; }), "Its state drives the listening animation."),
     row("Language model for comments", selectInput(entityOptions(all, "ai_task"), draft.llm, (v) => { draft.llm = v; }),
       "Off unless you choose one. When on, a short list of facts (track, room temperature, time) is sent to the model you set up in Home Assistant, which may be a cloud service. See docs/LANGUAGE-MODELS.md in the HAB repository."),
-    row("Music facts", checkboxInput("Look up facts about the track and artist", draft.musicLookup, (v) => { draft.musicLookup = v; }),
-      "Finds the release year, where the artist is from and the genre in MusicBrainz, a free open music database, and lets the model use them. Sends the track and artist names to musicbrainz.org."),
     row("Music knowledge", checkboxInput("Let the model add what it knows about the artist or song", draft.musicKnowledge, (v) => { draft.musicKnowledge = v; }),
       "Makes music lines more interesting. A model can be wrong about music and HAB cannot check it, so this is off unless you turn it on."),
   );

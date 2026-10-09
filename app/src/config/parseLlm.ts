@@ -6,11 +6,6 @@ export interface LlmConfig {
    * can be wrong about music and HAB cannot check it.
    */
   musicKnowledge?: boolean;
-  /**
-   * Look up facts about the track and artist in MusicBrainz, a free open music database, and let the
-   * model use them. Sends the track and artist names to musicbrainz.org. Off by default.
-   */
-  musicLookup?: boolean;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
@@ -24,11 +19,9 @@ export function parseLlm(raw: unknown): LlmConfig | undefined {
     throw new Error("llm.personality must be an AI Task entity id that starts with ai_task.");
   }
   const knowledge = optionalBoolean(raw, "musicKnowledge");
-  const lookup = optionalBoolean(raw, "musicLookup");
   return {
     ...(typeof entity === "string" && { personality: entity }),
     ...(knowledge !== undefined && { musicKnowledge: knowledge }),
-    ...(lookup !== undefined && { musicLookup: lookup }),
   };
 }
 

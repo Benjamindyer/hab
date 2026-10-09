@@ -31,6 +31,6 @@ export function buildDeps({ connection, entities, config, haUrl, settings }: Par
     browser: createMediaBrowser(connection),
     commentary: createCommentary(generator, { name: config.personality.name, musicKnowledge: config.llm?.musicKnowledge ?? false }),
     settings,
-    musicInfo: config.llm?.musicLookup ? createInfoLookup(createMusicBrainz(), createInfoStore()) : null,
+    musicInfo: config.music?.lookup ? createInfoLookup(createMusicBrainz(), createInfoStore()) : null,
   };
 }

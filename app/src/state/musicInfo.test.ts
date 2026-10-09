@@ -1,65 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { decadeOf, infoFacts, readoutsFor, type MusicInfo } from "./musicInfo";
+import { factsSentence, type MusicInfo } from "./musicInfo";
 
-const info: MusicInfo = { releaseYear: 1994, artistFrom: "United Kingdom", artistCity: "Glasgow", artistKind: "group", artistYear: 1982, genres: ["alternative rock", "electronic"] };
+const info: MusicInfo = { releaseYear: 1996, artistFrom: "United Kingdom", artistCity: "West Midlands", artistKind: "group", artistYear: 1988, genres: ["alternative rock", "britpop"] };
 
-describe("infoFacts", () => {
-  it("lists what the database knows, with the decade in words", () => {
-    expect(infoFacts(info)).toEqual({
-      firstReleasedYear: 1994,
-      releasedInTheDecade: "nineties",
-      artistFrom: "United Kingdom",
-      artistFromCity: "Glasgow",
-      artistKind: "group",
-      artistFormedYear: 1982,
-      genres: "alternative rock, electronic",
-    });
+describe("factsSentence", () => {
+  it("says when it came out, who the artist is and the genres", () => {
+    expect(factsSentence("One To Another", "The Charlatans", info)).toBe(
+      "One To Another was first released in 1996. The Charlatans formed in 1988 in West Midlands, United Kingdom. Genres: alternative rock, britpop.",
+    );
   });
 
-  it("calls the start year a birth year for a solo artist", () => {
-    expect(infoFacts({ ...info, artistKind: "solo artist" })).toHaveProperty("artistBornYear", 1982);
+  it("says born for a solo artist and uses only the main artist", () => {
+    const solo = { ...info, artistKind: "solo artist", artistYear: 1977, artistCity: "Bedale" };
+    expect(factsSentence("Jacques Your Body", "Les Rythmes Digitales, Guest", solo)).toContain("Les Rythmes Digitales was born in 1977 in Bedale, United Kingdom.");
   });
 
   it("leaves out what is unknown", () => {
-    expect(infoFacts({ ...info, releaseYear: null, genres: [], artistCity: null })).toEqual({
-      artistFrom: "United Kingdom",
-      artistKind: "group",
-      artistFormedYear: 1982,
-    });
+    const sparse: MusicInfo = { releaseYear: null, artistFrom: "United States", artistCity: null, artistKind: "group", artistYear: null, genres: [] };
+    expect(factsSentence("X", "Y", sparse)).toBe("Y are from United States.");
   });
 
-  it("gives nothing when there is no information", () => {
-    expect(infoFacts(null)).toEqual({});
-  });
-});
-
-describe("decadeOf", () => {
-  it("names the decade", () => {
-    expect(decadeOf(1994)).toBe("nineties");
-    expect(decadeOf(1969)).toBe("sixties");
-    expect(decadeOf(2003)).toBe("two thousands");
-    expect(decadeOf(1850)).toBeNull();
-  });
-});
-
-describe("readoutsFor", () => {
-  it("lists what is known as label and value pairs", () => {
-    expect(readoutsFor(info)).toEqual([
-      { label: "Released", value: "1994" },
-      { label: "Formed", value: "1982" },
-      { label: "From", value: "Glasgow, United Kingdom" },
-      { label: "Genre", value: "alternative rock, electronic" },
-    ]);
-  });
-
-  it("says Born for a solo artist and skips what is unknown", () => {
-    expect(readoutsFor({ ...info, artistKind: "solo artist", releaseYear: null, genres: [], artistCity: null })).toEqual([
-      { label: "Born", value: "1982" },
-      { label: "From", value: "United Kingdom" },
-    ]);
-  });
-
-  it("gives nothing without information", () => {
-    expect(readoutsFor(null)).toEqual([]);
+  it("says nothing when nothing is known", () => {
+    expect(factsSentence("X", "Y", { releaseYear: null, artistFrom: null, artistCity: null, artistKind: null, artistYear: null, genres: [] })).toBeNull();
+    expect(factsSentence("X", "Y", null)).toBeNull();
   });
 });

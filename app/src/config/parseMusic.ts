@@ -8,6 +8,11 @@ export interface MusicConfig {
   /** The Spotify device to start on when nothing is playing, for example "kitchen". */
   room?: string;
   favourites: Favourite[];
+  /**
+   * Show facts about the track and artist from MusicBrainz, a free open music database. Sends the
+   * track and artist names to musicbrainz.org. Off by default.
+   */
+  lookup?: boolean;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
@@ -26,5 +31,11 @@ export function parseMusic(raw: unknown): MusicConfig | undefined {
     throw new Error("music.player must be a media player entity id.");
   }
   const favourites = Array.isArray(raw["favourites"]) ? raw["favourites"].map(parseFavourite) : [];
-  return { player: raw["player"], favourites, ...(typeof raw["room"] === "string" && { room: raw["room"] }) };
+  if (raw["lookup"] !== undefined && typeof raw["lookup"] !== "boolean") throw new Error("music.lookup must be true or false.");
+  return {
+    player: raw["player"],
+    favourites,
+    ...(typeof raw["room"] === "string" && { room: raw["room"] }),
+    ...(raw["lookup"] === true && { lookup: true }),
+  };
 }

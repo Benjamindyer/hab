@@ -86,12 +86,12 @@ describe("parseConfig musicKnowledge", () => {
   });
 });
 
-describe("parseConfig musicLookup", () => {
+describe("parseConfig music lookup", () => {
   it("accepts the lookup switch", () => {
-    expect(parseConfig({ ...valid, llm: { musicLookup: true } }).llm?.musicLookup).toBe(true);
+    expect(parseConfig({ ...valid, music: { player: "media_player.s", lookup: true } }).music?.lookup).toBe(true);
   });
 
   it("rejects a switch that is not true or false", () => {
-    expect(() => parseConfig({ ...valid, llm: { musicLookup: 1 } })).toThrow(/musicLookup must be true or false/);
+    expect(() => parseConfig({ ...valid, music: { player: "media_player.s", lookup: 1 } })).toThrow(/music.lookup must be true or false/);
   });
 });

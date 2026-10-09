@@ -21,6 +21,7 @@ export function createMusicScene(): Scene {
   const element = el("section", "scene");
   element.id = "s-music";
   const note = el("div", "note");
+  const credit = el("div", "note-credit", "Facts from MusicBrainz");
   const sender = createSender();
   const browser: MediaBrowser = { browse: async (...args) => (await sender.context()?.browser.browse(...args)) ?? [] };
   const library = createLibrary(browser, createLibraryStore());
@@ -33,7 +34,7 @@ export function createMusicScene(): Scene {
   const picker = createPicker(controls.chooseRoom);
   const layout = buildPages(now, picker, panel, () => go("speakers"));
   const pager = createPager(layout.pages);
-  element.append(pager.element, pager.tabs, note);
+  element.append(pager.element, pager.tabs, note, credit);
   const follower = createPageFollower();
   let firstDraw = true;
 
@@ -49,8 +50,9 @@ export function createMusicScene(): Scene {
     layout.setRoom(state.room);
     panel.update(library.get(), music.favourites, context.haUrl);
     const line = musicLine(context, view, history);
-    now.update(view, line.info);
+    now.update(view);
     setText(note, sender.notice() ?? line.text);
+    credit.hidden = !line.fromDatabase || sender.notice() !== null;
   };
 
   return {

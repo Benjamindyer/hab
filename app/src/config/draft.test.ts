@@ -5,8 +5,8 @@ import { fromDraft, toDraft, type Draft } from "./draft";
 const full = parseConfig({
   personality: { humour: 60, honesty: 75, name: "Robo" },
   ambient: { room: "Kitchen", weather: "weather.home", climate: "climate.kitchen" },
-  music: { player: "media_player.spotify", room: "kitchen", favourites: [{ name: "Morning", uri: "spotify:playlist:abc" }] },
-  llm: { personality: "ai_task.model", musicKnowledge: true, musicLookup: true },
+  music: { player: "media_player.spotify", room: "kitchen", lookup: true, favourites: [{ name: "Morning", uri: "spotify:playlist:abc" }] },
+  llm: { personality: "ai_task.model", musicKnowledge: true },
   satellite: "assist_satellite.kitchen",
 });
 

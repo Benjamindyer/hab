@@ -24,18 +24,19 @@ export interface Draft {
   satellite: string;
 }
 
-function musicDraft(config: HabConfig): Pick<Draft, "player" | "defaultRoom" | "favourites"> {
+function musicDraft(config: HabConfig): Pick<Draft, "player" | "defaultRoom" | "favourites" | "musicLookup"> {
   const music = config.music;
   return {
     player: music?.player ?? "",
+    musicLookup: music?.lookup ?? false,
     defaultRoom: music?.room ?? "",
     favourites: (music?.favourites ?? []).map((f) => ({ name: f.name, link: f.uri })),
   };
 }
 
-function llmDraft(config: HabConfig): Pick<Draft, "llm" | "musicKnowledge" | "musicLookup"> {
+function llmDraft(config: HabConfig): Pick<Draft, "llm" | "musicKnowledge"> {
   const llm = config.llm;
-  return { llm: llm?.personality ?? "", musicKnowledge: llm?.musicKnowledge ?? false, musicLookup: llm?.musicLookup ?? false };
+  return { llm: llm?.personality ?? "", musicKnowledge: llm?.musicKnowledge ?? false, };
 }
 
 export function toDraft(config: HabConfig): Draft {
@@ -64,14 +65,14 @@ function favouritesFrom(draft: Draft): { name: string; uri: string }[] {
 }
 
 function llmFrom(draft: Draft): Record<string, string | boolean> | undefined {
-  const llm = { ...text("personality", draft.llm), ...(draft.musicKnowledge && { musicKnowledge: true }), ...(draft.musicLookup && { musicLookup: true }) };
+  const llm = { ...text("personality", draft.llm), ...(draft.musicKnowledge && { musicKnowledge: true }) };
   return Object.keys(llm).length > 0 ? llm : undefined;
 }
 
 /** Turns the form back into settings. Throws a plain message the owner can act on. */
 export function fromDraft(draft: Draft): HabConfig {
   const music = draft.player
-    ? { player: draft.player, favourites: favouritesFrom(draft), ...text("room", draft.defaultRoom) }
+    ? { player: draft.player, favourites: favouritesFrom(draft), ...text("room", draft.defaultRoom), ...(draft.musicLookup && { lookup: true }) }
     : undefined;
   return parseConfig({
     personality: { humour: draft.humour, honesty: draft.honesty, ...text("name", draft.name) },
