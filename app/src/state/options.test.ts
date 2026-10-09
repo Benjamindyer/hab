@@ -21,6 +21,15 @@ describe("entityOptions", () => {
   });
 });
 
+describe("entityOptions with device classes", () => {
+  const sensor = (id: string, device_class: string) => ({ id, state: "1", attributes: { device_class } });
+
+  it("keeps only the classes asked for", () => {
+    const options = entityOptions([sensor("sensor.a", "power"), sensor("sensor.b", "energy"), sensor("sensor.c", "power")], "sensor", ["power"]);
+    expect(options.map((o) => o.value)).toEqual(["sensor.a", "sensor.c"]);
+  });
+});
+
 describe("deviceOptions", () => {
   it("lists a player's devices", () => {
     const player = { id: "media_player.s", state: "idle", attributes: { source_list: ["kitchen", "Bedroom"] } };

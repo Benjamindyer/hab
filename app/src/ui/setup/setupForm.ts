@@ -2,6 +2,7 @@ import type { Draft } from "../../config/draft";
 import type { EntityStore } from "../../state/entities";
 import { deviceOptions, entityOptions } from "../../state/options";
 import { el } from "../dom";
+import { energy } from "./energyForm";
 import { createFavouritesEditor } from "./favourites";
 import { checkboxInput, dialInput, row, section, selectInput, textInput } from "./fields";
 
@@ -61,5 +62,5 @@ function extras(draft: Draft, entities: EntityStore): HTMLElement {
 
 /** The whole settings form. It edits the draft in place. */
 export function buildForm(draft: Draft, entities: EntityStore): HTMLElement[] {
-  return [assistant(draft), home(draft, entities), music(draft, entities), extras(draft, entities)];
+  return [assistant(draft), home(draft, entities), music(draft, entities), energy(draft, entities), extras(draft, entities)];
 }

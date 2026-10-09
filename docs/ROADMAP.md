@@ -15,7 +15,7 @@ Status on 2026-10-09. Tags: [Certain] [Likely] [Guessing].
 1. Timers on a HA `timer` entity: one tap to start, big countdown, rings until dismissed.
 2. Home controls for a room: light, scenes, heating.
 3. Spotify tabs: albums, recently played, liked songs, artists.
-4. Power scene on real entities. Built (Energy screen, sensors set in the config file). Setup page entry still to come.
+4. Power scene on real entities. Built (Energy screen, sensors chosen in Setup).
 5. Dimming and night mode.
 6. Voice scene, once a voice device is available to test.
 7. Personality with a real language model.

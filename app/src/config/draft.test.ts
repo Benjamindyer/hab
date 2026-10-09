@@ -8,6 +8,7 @@ const full = parseConfig({
   music: { player: "media_player.spotify", room: "kitchen", lookup: true, favourites: [{ name: "Morning", uri: "spotify:playlist:abc" }] },
   llm: { personality: "ai_task.model", musicKnowledge: true },
   satellite: "assist_satellite.kitchen",
+  power: { grid: "sensor.demand", solar: "sensor.pv" },
 });
 
 describe("draft", () => {
@@ -16,11 +17,12 @@ describe("draft", () => {
   });
 
   it("leaves out what is not chosen", () => {
-    const draft: Draft = { ...toDraft(full), name: "", weather: "", climate: "", player: "", llm: "", musicKnowledge: false, musicLookup: false, satellite: "" };
+    const draft: Draft = { ...toDraft(full), name: "", weather: "", climate: "", player: "", llm: "", musicKnowledge: false, musicLookup: false, satellite: "", power: { ...toDraft(full).power, grid: "", solar: "" } };
     const config = fromDraft(draft);
     expect(config.music).toBeUndefined();
     expect(config.llm).toBeUndefined();
     expect(config.satellite).toBeUndefined();
+    expect(config.power).toBeUndefined();
     expect(config.ambient).toEqual({ room: "Kitchen" });
     expect(config.personality.name).toBeUndefined();
   });

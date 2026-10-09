@@ -1,4 +1,5 @@
 import { parseConfig, type HabConfig } from "./config";
+import { POWER_KEYS, type PowerConfig } from "./parsePower";
 import { toSpotifyUri } from "./spotifyLink";
 
 export interface DraftFavourite {
@@ -22,6 +23,8 @@ export interface Draft {
   musicKnowledge: boolean;
   musicLookup: boolean;
   satellite: string;
+  /** The energy sensors, by key. An empty string means "not set". */
+  power: Record<(typeof POWER_KEYS)[number], string>;
 }
 
 function musicDraft(config: HabConfig): Pick<Draft, "player" | "defaultRoom" | "favourites" | "musicLookup"> {
@@ -39,6 +42,11 @@ function llmDraft(config: HabConfig): Pick<Draft, "llm" | "musicKnowledge"> {
   return { llm: llm?.personality ?? "", musicKnowledge: llm?.musicKnowledge ?? false, };
 }
 
+function powerDraft(config: HabConfig): Draft["power"] {
+  const chosen: PowerConfig = config.power ?? {};
+  return Object.fromEntries(POWER_KEYS.map((key) => [key, chosen[key] ?? ""])) as Draft["power"];
+}
+
 export function toDraft(config: HabConfig): Draft {
   return {
     name: config.personality.name ?? "",
@@ -50,6 +58,7 @@ export function toDraft(config: HabConfig): Draft {
     ...musicDraft(config),
     ...llmDraft(config),
     satellite: config.satellite ?? "",
+    power: powerDraft(config),
   };
 }
 
@@ -69,6 +78,11 @@ function llmFrom(draft: Draft): Record<string, string | boolean> | undefined {
   return Object.keys(llm).length > 0 ? llm : undefined;
 }
 
+function powerFrom(draft: Draft): PowerConfig | undefined {
+  const chosen = POWER_KEYS.filter((key) => draft.power[key].trim()).map((key) => [key, draft.power[key].trim()]);
+  return chosen.length > 0 ? Object.fromEntries(chosen) : undefined;
+}
+
 /** Turns the form back into settings. Throws a plain message the owner can act on. */
 export function fromDraft(draft: Draft): HabConfig {
   const music = draft.player
@@ -78,6 +92,7 @@ export function fromDraft(draft: Draft): HabConfig {
     personality: { humour: draft.humour, honesty: draft.honesty, ...text("name", draft.name) },
     ambient: { room: draft.room.trim() || "Home", ...text("weather", draft.weather), ...text("climate", draft.climate) },
     ...(music && { music }),
+    ...(powerFrom(draft) && { power: powerFrom(draft) }),
     ...(llmFrom(draft) && { llm: llmFrom(draft) }),
     ...text("satellite", draft.satellite),
   });
