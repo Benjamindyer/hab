@@ -25,7 +25,7 @@ The facts go to **whichever model you set up in Home Assistant**. A cloud model 
 - **A fixed line always shows first.** The model's line replaces it when it arrives. If the model is slow, offline or out of credit, you keep the fixed line and nothing breaks.
 - **It only asks when something changes**, such as a new track, a new hour, or different weather, and never more than once every two minutes. After a failure it waits five minutes.
 - **The model is told to use only the facts it is given** and not to invent anything.
-- **A check on every reply.** If a reply contains a number that is not in the facts, HAB throws it away and keeps the fixed line. Replies that are too long or span several lines are dropped too.
+- **A check on every reply.** If a reply contains a number that is not in the facts, HAB throws it away and keeps the fixed line. It checks numbers written as digits and as words ("twenty-three"). A rounded value is accepted: 17.2 may be written as 17 or "seventeen". Replies that are too long or span several lines are dropped too.
 - **Honesty means blunt, not untrue.** At a high honesty setting the line says plainly what the facts show. The assistant is never meant to lie at any setting.
 
 A model can still be odd or wrong in ways these checks do not catch. If a line looks wrong, the fixed line is one setting away (see "Turning it off").
@@ -41,13 +41,13 @@ You connect the model in Home Assistant, then tell HAB which one to use. HAB nev
 1. In Home Assistant go to **Settings, Devices & services, Add integration**.
 2. Search for your provider and add it. Several are supported by Home Assistant itself, including Anthropic, OpenAI, Google Generative AI and Ollama.
 3. Enter the key or address when Home Assistant asks. Home Assistant stores it.
-4. Make sure the integration provides an **AI Task**. In recent Home Assistant versions this is created for you, or offered as an "Add AI task" option on the integration's page. The wording can differ between versions and providers. You are looking for an entity whose name starts with `ai_task.`
+4. Make sure the integration provides an **AI Task**. On the integration's page, look for an **Add AI task** button (the Anthropic integration offers it next to **Add conversation agent**). The wording can differ between versions and providers. You are looking for an entity whose name starts with `ai_task.`, for example `ai_task.claude_ai_task`.
 5. Open HAB as a Home Assistant administrator, touch the screen, and choose **Setup**.
 6. Under **Voice and language model**, set **Language model for comments** to your AI Task. Press **Save**.
 
 Within a couple of minutes of a change on screen (a new track, a new hour) you should see the line change from the fixed one to the model's.
 
-(These steps have not yet been tried end to end with a real provider.)
+(Tested with Anthropic's integration and Claude Haiku 4.5 on Home Assistant 2026.10. A reply came back in about two seconds. Other providers have not been tried.)
 
 ## Turning it off
 

@@ -20,6 +20,17 @@ describe("numbersAreGrounded", () => {
     expect(numbersAreGrounded("Nothing to report.", facts)).toBe(true);
   });
 
+  it("checks numbers written as words", () => {
+    expect(numbersAreGrounded("Twenty-two degrees in the kitchen.", facts)).toBe(true);
+    expect(numbersAreGrounded("About eighteen outside.", facts)).toBe(true);
+    expect(numbersAreGrounded("Thirty-one degrees in the kitchen.", facts)).toBe(false);
+    expect(numbersAreGrounded("It is five past the hour.", facts)).toBe(false);
+  });
+
+  it("does not mistake the word one for a number", () => {
+    expect(numbersAreGrounded("No one is home. Quiet as one could wish.", facts)).toBe(true);
+  });
+
   it("finds numbers inside text facts, such as a track name", () => {
     expect(numbersAreGrounded("Playing 77 Strings.", facts)).toBe(true);
   });
