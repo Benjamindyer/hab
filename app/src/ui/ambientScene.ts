@@ -41,6 +41,7 @@ export function createAmbientScene(): Scene {
     update({ entities, config, now, commentary, haUrl, navigate }: SceneContext): void {
       const music = config.music ? buildMusicView(entities, config.music, now, haUrl) : null;
       widget.update(music ? nowPlayingSummary(music) : null, () => navigate("music"));
+      outside.box.onclick = () => navigate("weather");
       const view = buildAmbientView(entities, config.ambient, config.personality, now);
       setText(indoor.label, view.room);
       setText(indoor.value, degrees(view.indoor));

@@ -23,7 +23,7 @@ const DECADE = /\b(?:twenties|thirties|forties|fifties|sixties|seventies|eightie
 const numbersIn = (text: string): number[] => (text.match(NUMBER) ?? []).map(Number);
 
 function factNumbers(facts: Facts): number[] {
-  return Object.values(facts).flatMap((value) => (value === null ? [] : numbersIn(String(value))));
+  return Object.values(facts).flatMap((value) => (value === null ? [] : [...numbersIn(String(value)), ...wordNumbersIn(String(value))]));
 }
 
 /** A decade such as "nineties" is a claim about the music. It is fine only if the facts already say it. */

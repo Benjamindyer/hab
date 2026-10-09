@@ -54,4 +54,4 @@
 }
 
 .readout.left { left: 6vw; }
-.readout.right { right: 6vw; text-align: right; }
+.readout.right { right: 6vw; text-align: right; cursor: pointer; }

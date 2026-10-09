@@ -1,6 +1,7 @@
 import type { AmbientConfig } from "../config/config";
 import type { Entity, EntityStore } from "./entities";
 import type { Facts } from "./llm";
+import { partOfDay } from "./musicNote";
 import { ambientNote, type Personality } from "./personality";
 import { conditionLabel } from "./weather";
 
@@ -66,7 +67,7 @@ function degreesFromTarget(indoor: number | null, target: number | null): number
 /** The facts the model may use for the ambient line. Nothing else about the house is sent. */
 export function ambientFacts(view: AmbientView): Facts {
   return {
-    time: view.time,
+    partOfDay: partOfDay(Number.parseInt(view.time.slice(0, 2), 10)),
     room: view.room,
     roomTemperatureC: view.indoor,
     heatingTargetC: view.target,

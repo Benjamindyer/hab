@@ -3,6 +3,7 @@ import type { SettingsService } from "../config/settings";
 import type { Commentary } from "../state/commentary";
 import type { EntityStore } from "../state/entities";
 import type { MediaBrowser } from "../state/library";
+import type { ForecastCache } from "../state/forecastCache";
 import type { MusicInfoLookup } from "../state/musicInfo";
 import { deriveInputs, musicSeed } from "../state/inputs";
 import { activeRequest } from "../state/navigation";
@@ -12,6 +13,7 @@ import { createAmbientScene } from "./ambientScene";
 import { createMusicScene } from "./musicScene";
 import { createNav } from "./nav";
 import { createSetupScene } from "./setup/setupScene";
+import { createWeatherScene } from "./weatherScene";
 import type { Scene } from "./scene";
 import { createSlab } from "./slab";
 
@@ -31,13 +33,14 @@ export interface AppDeps {
   commentary: Commentary;
   settings: SettingsService | null;
   musicInfo: MusicInfoLookup | null;
+  forecast: ForecastCache;
 }
 
 /** Builds the stage, then redraws it whenever Home Assistant changes or each second. */
 export function mountApp(root: HTMLElement, deps: AppDeps): void {
-  const { entities, config, haUrl, run, browser, commentary, settings, musicInfo } = deps;
+  const { entities, config, haUrl, run, browser, commentary, settings, musicInfo, forecast } = deps;
   const fallback = createAmbientScene();
-  const scenes: Scene[] = [fallback, createMusicScene(), ...(settings ? [createSetupScene()] : [])];
+  const scenes: Scene[] = [fallback, createWeatherScene(), createMusicScene(), ...(settings ? [createSetupScene()] : [])];
   const slab = createSlab();
   let requested: SceneId | null = null;
   let lastTouch = Date.now();
@@ -75,7 +78,7 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
     nav.setActive(active.id);
     slab.setVoice(inputs.voice);
     slab.setMusic(musicSeed(entities, config.music?.player));
-    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo, navigate: pick });
+    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo, forecast, navigate: pick });
   }
 
   entities.subscribe(refresh);

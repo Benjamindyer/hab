@@ -24,6 +24,9 @@ const QUIPS: Record<string, string> = {
   snowy: "Biscuits are advised.",
 };
 
+/** A dry remark for a kind of weather, or undefined when there is none. */
+export const quipFor = (condition: string): string | undefined => QUIPS[condition];
+
 const fmt = (n: number): string => String(Number(n.toFixed(1)));
 
 function greeting(hour: number): string {

@@ -1,11 +1,12 @@
 import type { Facts } from "./llm";
 import type { Personality } from "./personality";
 
-export type CommentKind = "ambient" | "music";
+export type CommentKind = "ambient" | "music" | "weather";
 
 const SITUATION: Record<CommentKind, string> = {
   ambient: "The home screen is idle. Say one thing about the room, the weather or the time of day.",
   music: "Music is on. Say one thing about what is playing, or about how it is being listened to.",
+  weather: "The weather screen is showing. Say one thing about the weather now or coming up, using only the facts given.",
 };
 
 function humourWords(humour: number): string {
@@ -17,11 +18,13 @@ function humourWords(humour: number): string {
 const BLUNT_EXAMPLE: Record<CommentKind, string> = {
   ambient: "such as a room warmer than its heating target",
   music: "such as the same artist playing again and again, or music playing very late at night",
+  weather: "such as rain on the way when someone may be going out, or a strong wind",
 };
 
 const GENTLE_LEAVE_OUT: Record<CommentKind, string> = {
   ambient: "such as a room warmer than its heating target",
   music: "such as repeats of the same artist or the time of day",
+  weather: "such as a strong wind or a wet, cold day",
 };
 
 function honestyWords(kind: CommentKind, honesty: number): string {
@@ -53,6 +56,7 @@ export function buildInstructions({ kind, facts, dials, name, knowledge = false 
     `Humour ${dials.humour} out of 100: ${humourWords(dials.humour)}`,
     `Honesty ${dials.honesty} out of 100: ${honestyWords(kind, dials.honesty)}`,
     "Rules: use only the facts below. Never invent facts, numbers, names or events.",
+    "Do not say the time by the clock, such as an o'clock time or quarter to six. Use the part of the day from the facts instead, for example this afternoon.",
     music,
     "At most two short sentences and under 200 characters. Plain text only: no emoji, quotation marks or markdown. British English.",
     `Facts: ${JSON.stringify(facts)}`,

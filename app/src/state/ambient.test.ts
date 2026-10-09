@@ -37,7 +37,7 @@ describe("ambient facts and key", () => {
 
   it("lists only the facts the model may use", () => {
     expect(ambientFacts(view)).toEqual({
-      time: "14:04",
+      partOfDay: "afternoon",
       room: "Kitchen",
       roomTemperatureC: 22.4,
       heatingTargetC: 20,

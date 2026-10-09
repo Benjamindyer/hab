@@ -37,6 +37,10 @@ HAB has two parts that install together: a Home Assistant integration (served by
 
 With no settings saved, HAB works out what you have and fills in its own: the first weather entity, the first heating (climate) entity and the first Spotify player. You get the ambient screen and, if Spotify is set up in Home Assistant, the Music screen. It never turns on a language model by itself.
 
+### The weather screen
+
+Touch the outside temperature on the home screen, or choose **Weather** in the menu. It shows the temperature now, wind, humidity, pressure, UV and the next sunrise or sunset, a chart of the next day hour by hour (temperature and rain), and the next five days. The forecast comes from your Home Assistant weather entity. It needs a weather integration that supports forecasts, such as the default Met.no.
+
 ### Controlling music by touch
 
 On the Music screen's Now playing page, **tap** to pause or play, **swipe left** for the next track and **swipe right** for the previous one. The small buttons and the volume knob are there too. The Library and Speakers pages are reached with the tabs at the top. On the home screen, a small now playing widget appears under the date while music plays or is paused. Touch it to open the Music screen. While music is playing, HAB stays on the Music screen until you choose to leave it.

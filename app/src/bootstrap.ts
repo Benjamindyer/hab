@@ -2,11 +2,13 @@ import type { Connection } from "home-assistant-js-websocket";
 import type { HabConfig } from "./config/config";
 import type { SettingsService } from "./config/settings";
 import { createAiTaskGenerator } from "./ha/aiTask";
+import { createForecastSource } from "./ha/forecast";
 import { createMediaBrowser } from "./ha/mediaBrowser";
 import { createServiceRunner } from "./ha/services";
 import { createInfoLookup } from "./music/infoLookup";
 import { createMusicBrainz } from "./music/musicbrainz";
 import { createCommentary } from "./state/commentary";
+import { createForecastCache } from "./state/forecastCache";
 import type { EntityStore } from "./state/entities";
 import { createInfoStore } from "./storage/infoStore";
 import type { AppDeps } from "./ui/app";
@@ -31,6 +33,7 @@ export function buildDeps({ connection, entities, config, haUrl, settings }: Par
     browser: createMediaBrowser(connection),
     commentary: createCommentary(generator, { name: config.personality.name, musicKnowledge: config.llm?.musicKnowledge ?? false }),
     settings,
+    forecast: createForecastCache(createForecastSource(connection)),
     musicInfo: config.music?.lookup ? createInfoLookup(createMusicBrainz(), createInfoStore()) : null,
   };
 }

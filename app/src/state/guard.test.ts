@@ -100,3 +100,16 @@ describe("isAcceptable with the model's own knowledge allowed", () => {
     expect(isAcceptable("x".repeat(300), music, { ownKnowledge: true })).toBe(false);
   });
 });
+
+describe("numbers written as words inside the facts", () => {
+  const facts = { rainOutlook: "no rain in the next twelve hours", temperatureC: 17 };
+
+  it("lets a reply repeat a number the facts wrote in words", () => {
+    expect(isAcceptable("Dry for the next twelve hours.", facts)).toBe(true);
+    expect(isAcceptable("Dry for the next 12 hours.", facts)).toBe(true);
+  });
+
+  it("still rejects a different number", () => {
+    expect(isAcceptable("Dry for the next eight hours.", facts)).toBe(false);
+  });
+});

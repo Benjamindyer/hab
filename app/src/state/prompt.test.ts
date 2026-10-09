@@ -40,6 +40,12 @@ describe("buildInstructions", () => {
     expect(text).toContain("no year, decade, genre");
   });
 
+  it("asks the model not to tell the time by the clock", () => {
+    for (const kind of ["ambient", "music", "weather"] as const) {
+      expect(buildInstructions({ kind, facts, dials: { humour: 0, honesty: 0 }, name: "X" })).toContain("Do not say the time by the clock");
+    }
+  });
+
   it("describes the dials in words", () => {
     expect(buildInstructions({ kind: "music", facts: facts, dials: { humour: 0, honesty: 100 }, name: "X" })).toMatch(/No jokes.*Be blunt/s);
     expect(buildInstructions({ kind: "music", facts: facts, dials: { humour: 100, honesty: 0 }, name: "X" })).toMatch(/Clearly funny.*Be gentle/s);
