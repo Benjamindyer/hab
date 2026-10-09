@@ -42,7 +42,7 @@ With no settings saved, HAB works out what you have and fills in its own: the fi
 HAB never asks for a password or key. You connect services in Home Assistant, and HAB uses them.
 
 - **Spotify:** add the Spotify integration in Home Assistant (it needs your own Spotify developer app; Home Assistant walks you through it). Start a song on any device once, so HAB can read and save your playlists.
-- **Language model comments:** add an AI Task capable integration in Home Assistant (for example OpenAI, Anthropic, Google or Ollama). Then choose its `ai_task` entity on the Setup page. Off until you do.
+- **Language model comments:** optional, and off until you turn them on. Add a model in Home Assistant (for example Anthropic, OpenAI, Google or Ollama), then choose its AI Task on the Setup page. What is sent, what it costs and how to set it up are explained in [docs/LANGUAGE-MODELS.md](docs/LANGUAGE-MODELS.md).
 
 ### Changing settings
 
@@ -77,7 +77,7 @@ Copy `custom_components/hab` into your Home Assistant `config/custom_components`
 
 ## Privacy
 
-HAB never asks for a password or key. Sign-ins stay in Home Assistant. The optional LLM comments are off by default. When you turn them on, a short list of facts (for example the track name and the room temperature) goes to the model you picked in Home Assistant.
+HAB never asks for a password or key. Sign-ins stay in Home Assistant. The optional language model comments are off by default (see [docs/LANGUAGE-MODELS.md](docs/LANGUAGE-MODELS.md)). When you turn them on, a short list of facts (for example the track name and the room temperature) goes to the model you picked in Home Assistant.
 
 ## Develop
 

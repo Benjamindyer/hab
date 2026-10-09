@@ -50,7 +50,7 @@ function extras(draft: Draft, entities: EntityStore): HTMLElement {
   box.append(
     row("Voice device", selectInput(entityOptions(all, "assist_satellite"), draft.satellite, (v) => { draft.satellite = v; }), "Its state drives the listening animation."),
     row("Language model for comments", selectInput(entityOptions(all, "ai_task"), draft.llm, (v) => { draft.llm = v; }),
-      "Off unless you choose one. When on, a short list of facts (track, room temperature, time) is sent to the model you set up in Home Assistant, which may be a cloud service."),
+      "Off unless you choose one. When on, a short list of facts (track, room temperature, time) is sent to the model you set up in Home Assistant, which may be a cloud service. See docs/LANGUAGE-MODELS.md in the HAB repository."),
   );
   return box;
 }
