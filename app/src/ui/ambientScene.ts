@@ -3,6 +3,7 @@ import { buildMusicView } from "../state/music";
 import { nowPlayingSummary } from "../state/nowPlaying";
 import { setText } from "./dom";
 import { createNowPlayingWidget } from "./nowPlayingWidget";
+import { createSpeech } from "./speech";
 import type { Scene, SceneContext } from "./scene";
 
 const degrees = (value: number | null): string => (value === null ? "--" : `${value.toFixed(1)}°`);
@@ -31,14 +32,14 @@ export function createAmbientScene(): Scene {
   const outside = readout("right");
   const clock = textBlock("clock mono");
   const date = textBlock("date");
-  const note = textBlock("note");
+  const speech = createSpeech();
   const widget = createNowPlayingWidget();
-  element.append(indoor.box, outside.box, clock, date, widget.element, note);
+  element.append(indoor.box, outside.box, clock, date, widget.element, speech.element);
 
   return {
     id: "ambient",
     element,
-    update({ entities, config, now, commentary, haUrl, navigate }: SceneContext): void {
+    update({ entities, config, now, commentary, haUrl, navigate, speak }: SceneContext): void {
       const music = config.music ? buildMusicView(entities, config.music, now, haUrl) : null;
       widget.update(music ? nowPlayingSummary(music) : null, () => navigate("music"));
       outside.box.onclick = () => navigate("weather");
@@ -50,7 +51,7 @@ export function createAmbientScene(): Scene {
       setText(clock, view.time);
       setText(date, view.date);
       const request = { kind: "ambient" as const, key: ambientKey(view), fallback: view.note, facts: ambientFacts(view) };
-      setText(note, commentary.line(request, config.personality));
+      speech.say(commentary.line(request, config.personality), speak);
     },
   };
 }

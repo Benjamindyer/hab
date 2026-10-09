@@ -47,7 +47,6 @@
 #s-weather .day-temps { font-size: calc(var(--u) * 2); white-space: pre; }
 #s-weather .day-rain { color: var(--dim); font-size: calc(var(--u) * 1.5); }
 
-#s-weather .note { position: absolute; left: 50%; bottom: 6.5vh; transform: translateX(-50%); width: min(70vw, 120vmin); text-align: center; font-size: calc(var(--u) * 3); font-weight: 300; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; pointer-events: none; }
 
 /* A day opened up: the whole screen for one day. */
 #s-weather .day { font: inherit; color: inherit; background: none; border: 0; border-top: 1px solid var(--faint); cursor: pointer; }

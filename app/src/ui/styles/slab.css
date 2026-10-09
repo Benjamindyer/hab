@@ -42,3 +42,9 @@ body[data-voice="responding"] #slab {
   height: 26vmin;
   align-items: center;
 }
+
+/* The line of text that seems to come from the slab: beside it, level with its middle. */
+.speech { position: absolute; z-index: 2; pointer-events: none; left: calc(6vw + 3.4vmin + 3vmin); bottom: calc(8vh + 3.6vmin); transform: translateY(50%); width: min(66vw, 110vmin); padding-left: 2.4vmin; border-left: 1px solid var(--faint); text-align: left; font-size: calc(var(--u) * 3); font-weight: 300; line-height: 1.35; min-height: 1.35em; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; transition: border-color 0.4s ease; }
+.speech.typing::after { content: "\2588"; color: var(--dim); margin-left: 0.15em; animation: blink 0.7s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+#slab.speaking i { filter: brightness(1.35); }

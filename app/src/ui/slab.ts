@@ -6,6 +6,8 @@ export interface Slab {
   setVoice(state: VoiceState): void;
   /** A name to dance to while music plays, or null for no dancing. */
   setMusic(seed: string | null): void;
+  /** Moves as if talking, for this many milliseconds. Used while a line of text is typed out. */
+  speak(ms: number): void;
 }
 
 const BARS = 4;
@@ -37,12 +39,14 @@ export function createSlab(): Slab {
   const bars = Array.from({ length: BARS }, () => element.appendChild(document.createElement("i")));
   let state: VoiceState = "idle";
   let seed: string | null = null;
+  let speakingUntil = 0;
 
   const frame = (now: number): void => {
     const seconds = now / 1000;
     bars.forEach((bar, index) => {
-      const dancing = state === "idle" && seed !== null && !calm;
-      const pose = dancing && seed !== null ? dancePose(seed, seconds, index) : voicePose(state, seconds, index);
+      const talking = state === "idle" && now < speakingUntil && !calm;
+      const dancing = state === "idle" && seed !== null && !calm && !talking;
+      const pose = dancing && seed !== null ? dancePose(seed, seconds, index) : voicePose(talking ? "responding" : state, seconds, index);
       bar.style.height = `${pose.height * 100}%`;
       bar.style.transform = `translateY(${pose.lift}%) rotate(${pose.tilt}deg)`;
     });
@@ -54,5 +58,10 @@ export function createSlab(): Slab {
     element,
     setVoice: (next) => { state = next; },
     setMusic: (next) => { seed = next; },
+    speak: (ms) => {
+      speakingUntil = performance.now() + ms;
+      element.classList.add("speaking");
+      setTimeout(() => element.classList.remove("speaking"), ms);
+    },
   };
 }

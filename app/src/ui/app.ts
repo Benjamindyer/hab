@@ -78,7 +78,7 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
     nav.setActive(active.id);
     slab.setVoice(inputs.voice);
     slab.setMusic(musicSeed(entities, config.music?.player));
-    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo, forecast, navigate: pick });
+    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo, forecast, navigate: pick, speak: slab.speak });
   }
 
   entities.subscribe(refresh);

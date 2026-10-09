@@ -139,10 +139,9 @@
 .pl:active { opacity: 0.8; }
 #s-music .empty { color: var(--dim); font-weight: 300; font-size: min(calc(var(--u) * 2.2), 1.9vw); padding: 1vh 0; }
 
-#s-music .note { position: absolute; z-index: 2; pointer-events: none; left: 50%; bottom: 6.5vh; transform: translateX(-50%); width: min(70vw, 120vmin); text-align: center; font-size: calc(var(--u) * 3); font-weight: 300; line-height: 1.35; min-height: 2.8em; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 
-#s-music .note-credit { position: absolute; z-index: 2; left: 50%; bottom: 3vh; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; pointer-events: none; }
+#s-music .note-credit { position: absolute; z-index: 2; left: calc(6vw + 3.4vmin + 3vmin); bottom: 3vh; color: var(--dim); font-size: calc(var(--u) * 1.4); letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; pointer-events: none; }
 #s-music .note-credit[hidden] { display: none; }
 
 #s-music.immersive .info { opacity: 0; pointer-events: none; }

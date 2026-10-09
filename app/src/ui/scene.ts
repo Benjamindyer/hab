@@ -24,6 +24,8 @@ export interface SceneContext {
   forecast: ForecastCache;
   /** Moves the screen to another scene, as if the user had chosen it. */
   navigate(scene: SceneId): void;
+  /** Makes the slab move as if talking for a moment, while a line of text is typed out. */
+  speak(ms: number): void;
 }
 
 /** Every scene is a self-contained module with this shape. */
