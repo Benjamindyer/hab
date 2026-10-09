@@ -2,7 +2,7 @@ import { dayTitle, hoursOnDay, type DayPoint, type HourPoint } from "../state/fo
 import { compassPoint } from "../state/compass";
 import { conditionLabel } from "../state/weather";
 import { el } from "./dom";
-import { hourlyChartSvg } from "./weatherChart";
+import { buildHourlyChart } from "./weatherChart";
 import { dayColumns } from "./weatherDays";
 import { weatherIcon } from "./weatherIcons";
 
@@ -38,10 +38,9 @@ export interface DayContext {
 /** The hours of the day as a chart. When the day is too far ahead for hours, the days side by side give some context instead. */
 function chartBlock(hours: HourPoint[], day: DayPoint, now: Date, context: DayContext): HTMLElement {
   const box = el("div", "w-chart d-chart");
-  if (hours.length >= 3) {
-    box.append(el("div", "w-chart-svg"));
-    const svg = box.firstElementChild;
-    if (svg) svg.innerHTML = hourlyChartSvg(hours);
+  const chart = hours.length >= 3 ? buildHourlyChart(hours) : null;
+  if (chart) {
+    box.append(chart);
     return box;
   }
   const strip = el("div", "w-days d-strip");

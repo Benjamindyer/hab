@@ -17,13 +17,19 @@
 #s-weather .w-arrow svg { width: 100%; height: 100%; }
 
 #s-weather .w-chart { flex: 1 1 0; min-height: 0; position: relative; }
-#s-weather .w-chart-svg { position: absolute; inset: 0; }
-#s-weather .w-chart svg { width: 100%; height: 100%; overflow: visible; }
+#s-weather .d-chart > .hc { position: relative; flex: 1; inset: auto; }
+#s-weather .hc { position: absolute; inset: 0 1.2% 0 1.2%; }
+#s-weather .hc-curve { position: absolute; left: 0; right: 0; top: 0; }
+#s-weather .hc-curve svg { width: 100%; height: 100%; display: block; overflow: visible; }
 #s-weather .c-line { fill: none; stroke: var(--ice); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
-#s-weather .c-dot { fill: var(--ink); }
-#s-weather .c-temp { fill: var(--ink); font: 300 15px ui-monospace, Menlo, monospace; }
-#s-weather .c-hour { fill: var(--dim); font: 300 13px ui-monospace, Menlo, monospace; letter-spacing: 0.1em; }
-#s-weather .c-rain { fill: var(--ice); opacity: 0.45; }
+#s-weather .hc-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); transform: translate(-50%, -50%); }
+#s-weather .hc-temp { position: absolute; color: var(--ink); font: 300 calc(var(--u) * 2) ui-monospace, Menlo, monospace; transform: translate(-50%, 0); white-space: nowrap; }
+#s-weather .hc-temp.above { margin-top: -2.8vmin; }
+#s-weather .hc-temp.below { margin-top: 1.2vmin; }
+#s-weather .hc-temp.edge-left { transform: translate(-30%, 0); }
+#s-weather .hc-temp.edge-right { transform: translate(-70%, 0); }
+#s-weather .hc-rain { position: absolute; width: 1.2%; background: var(--ice); opacity: 0.45; transform: translateX(-50%); }
+#s-weather .hc-hour { position: absolute; bottom: 0; transform: translateX(-50%); color: var(--dim); font-size: calc(var(--u) * 1.5); letter-spacing: 0.1em; }
 
 #s-weather .w-days { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.4vmin; }
 #s-weather .day { display: flex; flex-direction: column; align-items: center; gap: 0.8vmin; border-top: 1px solid var(--faint); padding-top: 1.2vmin; }

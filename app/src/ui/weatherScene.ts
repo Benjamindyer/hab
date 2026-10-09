@@ -2,7 +2,7 @@ import { buildWeatherView } from "../state/weatherView";
 import { weatherFacts, weatherKey, weatherNote } from "../state/weatherNote";
 import { el, renderWhenChanged, setText } from "./dom";
 import type { Scene, SceneContext } from "./scene";
-import { hourlyChartSvg } from "./weatherChart";
+import { buildHourlyChart } from "./weatherChart";
 import { createDayOverlay } from "./weatherDetail";
 import { dayColumns } from "./weatherDays";
 import { createCurrent, createDetails } from "./weatherParts";
@@ -34,9 +34,8 @@ export function createWeatherScene(): Scene {
       current.update(view, now);
       details.update(view, now);
       renderWhenChanged(chart, view.hours.map((h) => `${h.at.getTime()}:${h.temp}:${h.rain}`).join("|"), () => {
-        const svg = el("div", "w-chart-svg");
-        svg.innerHTML = hourlyChartSvg(view.hours);
-        return [svg];
+        const chartElement = buildHourlyChart(view.hours);
+        return chartElement ? [chartElement] : [];
       });
       renderWhenChanged(days, `${now.getDate()}|${view.days.map((d) => `${d.high}${d.low}${d.rain}${d.condition}`).join("|")}`, () => dayColumns(view.days, now, overlay.open));
       overlay.update(view.days, data.hourly, now);
