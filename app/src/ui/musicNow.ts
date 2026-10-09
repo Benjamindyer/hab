@@ -67,8 +67,11 @@ export function createNowPanel(handlers: NowHandlers): NowPanel {
   const player = el("div", "player");
   player.append(progress, times, row);
 
+  const stage = el("div", "stage");
+  stage.append(record.disc, record.sleeve, info);
+
   return {
-    elements: [record.disc, record.sleeve, info, player],
+    elements: [stage, player],
     update(view) {
       record.update(view);
       setText(source, sourceLabel(view));

@@ -17,7 +17,7 @@ export function buildPages(now: NowPanel, picker: Picker, panel: LibraryPanel, g
   where.addEventListener("click", goToSpeakers);
   const library = el("div", "library-page");
   library.append(el("div", "page-title", "Playlists"), where, panel.element);
-  const nowPage = el("div");
+  const nowPage = el("div", "now-layout");
   nowPage.append(...now.elements);
   return {
     pages: [
