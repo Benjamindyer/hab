@@ -51,8 +51,9 @@ Sign in to HAB as a Home Assistant **administrator** (the sidebar item, or the a
 - name the assistant and set its humour and honesty,
 - choose the weather and heating entities and the room name,
 - choose the Spotify player, the speaker to start on, and favourite playlists (paste a link from Spotify's Share menu),
+- show facts about the playing track (release year, where the artist is from, genres) from MusicBrainz,
 - choose a voice device,
-- turn on language model comments by choosing an AI Task entity.
+- turn on language model comments by choosing an AI Task entity, and optionally let the model add what it knows about the music.
 
 Press **Save**. The settings are stored in Home Assistant, so every tablet uses them. **Use automatic settings** goes back to HAB's own guess. The wall tablet signs in as a normal user and never sees Setup. (The Setup page is tested in pieces, not yet end to end on a real install.)
 
