@@ -30,6 +30,14 @@ The facts go to **whichever model you set up in Home Assistant**. A cloud model 
 
 A model can still be odd or wrong in ways these checks do not catch. If a line looks wrong, the fixed line is one setting away (see "Turning it off").
 
+## Music facts from MusicBrainz (optional, off by default)
+
+Turn on **Music facts** in Setup and HAB looks up each track in [MusicBrainz](https://musicbrainz.org), a free open music database. It finds the year the track first came out, where the artist is from, when the group formed (or the person was born) and the genre. HAB shows these beside the cover, and the model may use them, so its line can be interesting **and** true.
+
+- **What is sent:** only the track title and the artist name, to musicbrainz.org. Nothing else. Answers are kept in the browser, so each track is looked up once.
+- **How a match is chosen:** a close match for the title and artist, and the earliest release date, because live versions and re-releases come later. If there is no close match, HAB shows nothing rather than guessing.
+- **Limits:** a database is only as good as its entries, and two songs with the same title by the same artist can be confused. Lookups run one a second, so facts appear a few seconds after a track starts.
+
 ## Music knowledge (optional, off by default)
 
 By default a music line can only use the facts HAB gives it: the track, artist, album, speaker, time of day and how many tracks in a row share an artist. That keeps it true, but it can be plain.

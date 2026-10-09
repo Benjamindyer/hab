@@ -92,6 +92,17 @@ describe("createCommentary failures and changes", () => {
     expect(generator.calls).toBe(2);
   });
 
+  it("waits while facts are still being fetched", async () => {
+    const generator = fake("Fine.");
+    const commentary = createCommentary(generator, { minGapMs: 0 });
+    expect(commentary.line(request("a", { hold: true }), dials)).toBe("Fallback line.");
+    await commentary.settled();
+    expect(generator.calls).toBe(0);
+    commentary.line(request("a"), dials);
+    await commentary.settled();
+    expect(generator.calls).toBe(1);
+  });
+
   it("asks again when the dials change", async () => {
     const generator = fake("Fine.");
     const commentary = createCommentary(generator, { minGapMs: 0 });

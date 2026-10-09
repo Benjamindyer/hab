@@ -1,7 +1,6 @@
 import { createLibrary, type MediaBrowser } from "../state/library";
 import { buildMusicView, targetRoom } from "../state/music";
 import { createListeningHistory } from "../state/listening";
-import { musicFacts, musicKey, musicNote, partOfDay, type MusicExtras } from "../state/musicNote";
 import { createPageFollower, type MusicPage } from "../state/musicPage";
 import { createLibraryStore } from "../storage/libraryStore";
 import { el, setText } from "./dom";
@@ -9,6 +8,7 @@ import { createControls, type MusicState } from "./musicControls";
 import { createLibraryPanel } from "./musicLibrary";
 import { createNowPanel } from "./musicNow";
 import { buildPages } from "./musicPages";
+import { musicLine } from "./musicLine";
 import { createPicker } from "./musicPicker";
 import { createSender } from "./musicSender";
 import { createPager } from "./pager";
@@ -45,16 +45,12 @@ export function createMusicScene(): Scene {
     if (page) pager.goTo(page, !firstDraw);
     firstDraw = false;
     library.refresh(music.player, view.mode === "playing" || view.mode === "paused").catch(() => undefined);
-    now.update(view);
     picker.update(view, state.room);
     layout.setRoom(state.room);
     panel.update(library.get(), music.favourites, context.haUrl);
-    if (view.mode === "playing") history.record(view.title, view.artist);
-    const extras: MusicExtras = { partOfDay: partOfDay(context.now.getHours()), sameArtistInARow: history.sameArtistInARow() };
-    const fallback = musicNote(view, context.config.personality, extras);
-    const request = { kind: "music" as const, key: musicKey(view, extras), fallback, facts: musicFacts(view, extras) };
-    const line = view.mode === "playing" ? context.commentary.line(request, context.config.personality) : fallback;
-    setText(note, sender.notice() ?? line);
+    const line = musicLine(context, view, history);
+    now.update(view, line.info);
+    setText(note, sender.notice() ?? line.text);
   };
 
   return {

@@ -4,8 +4,11 @@ import type { SettingsService } from "./config/settings";
 import { createAiTaskGenerator } from "./ha/aiTask";
 import { createMediaBrowser } from "./ha/mediaBrowser";
 import { createServiceRunner } from "./ha/services";
+import { createInfoLookup } from "./music/infoLookup";
+import { createMusicBrainz } from "./music/musicbrainz";
 import { createCommentary } from "./state/commentary";
 import type { EntityStore } from "./state/entities";
+import { createInfoStore } from "./storage/infoStore";
 import type { AppDeps } from "./ui/app";
 
 /** Joins the Home Assistant pieces to the screens. This is the only place that knows about both. */
@@ -28,5 +31,6 @@ export function buildDeps({ connection, entities, config, haUrl, settings }: Par
     browser: createMediaBrowser(connection),
     commentary: createCommentary(generator, { name: config.personality.name, musicKnowledge: config.llm?.musicKnowledge ?? false }),
     settings,
+    musicInfo: config.llm?.musicLookup ? createInfoLookup(createMusicBrainz(), createInfoStore()) : null,
   };
 }

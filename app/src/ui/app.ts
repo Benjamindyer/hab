@@ -3,6 +3,7 @@ import type { SettingsService } from "../config/settings";
 import type { Commentary } from "../state/commentary";
 import type { EntityStore } from "../state/entities";
 import type { MediaBrowser } from "../state/library";
+import type { MusicInfoLookup } from "../state/musicInfo";
 import { deriveInputs, musicSeed } from "../state/inputs";
 import { activeRequest } from "../state/navigation";
 import { chooseScene, type SceneId } from "../state/scene";
@@ -29,11 +30,12 @@ export interface AppDeps {
   browser: MediaBrowser;
   commentary: Commentary;
   settings: SettingsService | null;
+  musicInfo: MusicInfoLookup | null;
 }
 
 /** Builds the stage, then redraws it whenever Home Assistant changes or each second. */
 export function mountApp(root: HTMLElement, deps: AppDeps): void {
-  const { entities, config, haUrl, run, browser, commentary, settings } = deps;
+  const { entities, config, haUrl, run, browser, commentary, settings, musicInfo } = deps;
   const fallback = createAmbientScene();
   const scenes: Scene[] = [fallback, createMusicScene(), ...(settings ? [createSetupScene()] : [])];
   const slab = createSlab();
@@ -68,7 +70,7 @@ export function mountApp(root: HTMLElement, deps: AppDeps): void {
     nav.setActive(active.id);
     slab.setVoice(inputs.voice);
     slab.setMusic(musicSeed(entities, config.music?.player));
-    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings });
+    active.update({ entities, config, now: new Date(), haUrl, run, browser, commentary, settings, musicInfo });
   }
 
   entities.subscribe(refresh);

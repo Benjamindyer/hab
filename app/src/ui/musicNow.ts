@@ -1,5 +1,7 @@
 import { el, mmss, renderWhenChanged, setText } from "./dom";
 import type { MusicView } from "../state/music";
+import { readoutsFor, type MusicInfo } from "../state/musicInfo";
+import { createRecord } from "./record";
 
 export interface NowHandlers {
   onPlayPause(): void;
@@ -9,7 +11,7 @@ export interface NowHandlers {
 
 export interface NowPanel {
   elements: HTMLElement[];
-  update(view: MusicView): void;
+  update(view: MusicView, info: MusicInfo | null): void;
 }
 
 const PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>';
@@ -59,42 +61,58 @@ function renderVolume(bars: HTMLElement, level: number): void {
   );
 }
 
-/** The part of the music screen that shows the track and its controls. */
+function renderReadouts(box: HTMLElement, info: MusicInfo | null): void {
+  const items = readoutsFor(info);
+  renderWhenChanged(box, JSON.stringify(items), () =>
+    items.length === 0
+      ? []
+      : [
+          ...items.map((item) => {
+            const pair = el("div", item.label === "From" || item.label === "Genre" ? "readout-pair wide" : "readout-pair");
+            pair.append(el("span", "readout-label", item.label), el("span", "readout-value", item.value));
+            return pair;
+          }),
+          el("div", "readout-credit", "Facts from MusicBrainz"),
+        ],
+  );
+}
+
+/** The part of the music screen that shows the cover, the record, the track and its controls. */
 export function createNowPanel(handlers: NowHandlers): NowPanel {
-  const frame = el("div", "art-frame");
-  const art = frame.appendChild(el("img"));
+  const record = createRecord();
   const source = el("div", "src");
   const title = el("div", "ttl");
   const artist = el("div", "artist");
+  const readouts = el("div", "readouts");
   const fill = el("b");
   const position = el("span", "", "0:00");
   const duration = el("span", "", "0:00");
   const play = iconButton(PLAY, "Play or pause", handlers.onPlayPause, true);
   const bars = volumeBars(handlers.onVolume);
 
-  const top = el("div");
-  top.append(source, title, artist);
+  const info = el("div", "info");
+  info.append(source, title, artist, readouts);
   const progress = el("div", "prog");
   progress.append(fill);
   const times = el("div", "times mono");
   times.append(position, duration);
   const controls = el("div", "tr");
   controls.append(iconButton(PREV, "Previous", () => handlers.onSkip("previous")), play, iconButton(NEXT, "Next", () => handlers.onSkip("next")));
-  const bottom = el("div");
-  bottom.append(progress, times, controls);
-  const info = el("div", "info");
-  info.append(top, bottom);
   const volume = el("div", "vol");
   volume.append(el("span", "k", "Volume"), bars);
+  const row = el("div", "control-row");
+  row.append(el("div"), controls, volume);
+  const player = el("div", "player");
+  player.append(progress, times, row);
 
   return {
-    elements: [frame, info, volume],
-    update(view) {
+    elements: [record.disc, record.sleeve, info, player],
+    update(view, facts) {
+      record.update(view);
       setText(source, sourceLabel(view));
       setText(title, view.title ?? "");
       setText(artist, view.artist ?? "");
-      if (view.art && art.getAttribute("src") !== view.art) art.src = view.art;
-      art.hidden = !view.art;
+      renderReadouts(readouts, facts);
       fill.style.width = `${progressPercent(view)}%`;
       setText(position, mmss(view.position ?? 0));
       setText(duration, mmss(view.duration ?? 0));

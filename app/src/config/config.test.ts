@@ -85,3 +85,13 @@ describe("parseConfig musicKnowledge", () => {
     expect(() => parseConfig({ ...valid, llm: { musicKnowledge: "yes" } })).toThrow(/true or false/);
   });
 });
+
+describe("parseConfig musicLookup", () => {
+  it("accepts the lookup switch", () => {
+    expect(parseConfig({ ...valid, llm: { musicLookup: true } }).llm?.musicLookup).toBe(true);
+  });
+
+  it("rejects a switch that is not true or false", () => {
+    expect(() => parseConfig({ ...valid, llm: { musicLookup: 1 } })).toThrow(/musicLookup must be true or false/);
+  });
+});

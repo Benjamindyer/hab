@@ -31,7 +31,9 @@ async function start(app: HTMLElement): Promise<void> {
   const stored = file ? null : await fetchStoredConfig(connection);
   const { config, source } = resolveConfig({ file, stored, entities: entities.all() });
   const settings = (await isAdmin(connection)) ? createSettingsService(connection, source) : null;
-  mountApp(app, buildDeps({ connection, entities, config, haUrl, settings }));
+  const deps = buildDeps({ connection, entities, config, haUrl, settings });
+  if (import.meta.env.DEV) Object.assign(window, { habDeps: deps });
+  mountApp(app, deps);
   mountConnectionBanner(document.body, createConnectionStatus(connection));
   keepScreenAwake();
   startUpdateCheck();

@@ -20,6 +20,7 @@ export interface Draft {
   favourites: DraftFavourite[];
   llm: string;
   musicKnowledge: boolean;
+  musicLookup: boolean;
   satellite: string;
 }
 
@@ -32,6 +33,11 @@ function musicDraft(config: HabConfig): Pick<Draft, "player" | "defaultRoom" | "
   };
 }
 
+function llmDraft(config: HabConfig): Pick<Draft, "llm" | "musicKnowledge" | "musicLookup"> {
+  const llm = config.llm;
+  return { llm: llm?.personality ?? "", musicKnowledge: llm?.musicKnowledge ?? false, musicLookup: llm?.musicLookup ?? false };
+}
+
 export function toDraft(config: HabConfig): Draft {
   return {
     name: config.personality.name ?? "",
@@ -41,8 +47,7 @@ export function toDraft(config: HabConfig): Draft {
     weather: config.ambient.weather ?? "",
     climate: config.ambient.climate ?? "",
     ...musicDraft(config),
-    llm: config.llm?.personality ?? "",
-    musicKnowledge: config.llm?.musicKnowledge ?? false,
+    ...llmDraft(config),
     satellite: config.satellite ?? "",
   };
 }
@@ -58,6 +63,11 @@ function favouritesFrom(draft: Draft): { name: string; uri: string }[] {
   });
 }
 
+function llmFrom(draft: Draft): Record<string, string | boolean> | undefined {
+  const llm = { ...text("personality", draft.llm), ...(draft.musicKnowledge && { musicKnowledge: true }), ...(draft.musicLookup && { musicLookup: true }) };
+  return Object.keys(llm).length > 0 ? llm : undefined;
+}
+
 /** Turns the form back into settings. Throws a plain message the owner can act on. */
 export function fromDraft(draft: Draft): HabConfig {
   const music = draft.player
@@ -67,7 +77,7 @@ export function fromDraft(draft: Draft): HabConfig {
     personality: { humour: draft.humour, honesty: draft.honesty, ...text("name", draft.name) },
     ambient: { room: draft.room.trim() || "Home", ...text("weather", draft.weather), ...text("climate", draft.climate) },
     ...(music && { music }),
-    ...((draft.llm || draft.musicKnowledge) && { llm: { ...text("personality", draft.llm), ...(draft.musicKnowledge && { musicKnowledge: true }) } }),
+    ...(llmFrom(draft) && { llm: llmFrom(draft) }),
     ...text("satellite", draft.satellite),
   });
 }

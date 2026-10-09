@@ -1,7 +1,7 @@
 import { isAcceptable } from "./guard";
 import type { Facts, TextGenerator } from "./llm";
 import type { Personality } from "./personality";
-import { buildInstructions, type CommentKind } from "./prompt";
+import { buildInstructions, hasDatabaseFacts, type CommentKind } from "./prompt";
 
 export interface CommentRequest {
   kind: CommentKind;
@@ -10,6 +10,8 @@ export interface CommentRequest {
   /** The line to show now, and whenever the model has nothing better. */
   fallback: string;
   facts: Facts;
+  /** True while facts are still being fetched. The fixed line stays and no request is made yet. */
+  hold?: boolean;
 }
 
 export interface Commentary {
@@ -60,7 +62,7 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
   async function ask(request: CommentRequest, dials: Personality, key: string): Promise<void> {
     if (!generator) return;
     const instructions = buildInstructions({ kind: request.kind, facts: request.facts, dials, name, knowledge: musicKnowledge });
-    const ownKnowledge = musicKnowledge && request.kind === "music";
+    const ownKnowledge = musicKnowledge && request.kind === "music" && !hasDatabaseFacts(request.facts);
     try {
       for (let attempt = 0; attempt < attempts; attempt++) {
         const text = (await generator.generate({ taskName: `HAB ${request.kind} comment`, instructions })).trim();
@@ -68,9 +70,11 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
           cache.set(request.kind, { key, text });
           return;
         }
+        console.debug(`HAB: a ${request.kind} line failed the checks and was dropped:`, text);
       }
       cache.set(request.kind, { key, text: null });
-    } catch {
+    } catch (error) {
+      console.debug(`HAB: the ${request.kind} line could not be written, keeping the fixed line:`, error);
       paceOf(request.kind).lastFail = clock();
     }
   }
@@ -83,6 +87,7 @@ export function createCommentary(generator: TextGenerator | null, options: Comme
       const key = `${request.key}|${dials.humour}/${dials.honesty}`;
       const hit = cache.get(request.kind);
       if (hit?.key === key) return hit.text ?? request.fallback;
+      if (request.hold) return request.fallback;
       const p = paceOf(request.kind);
       if (due(p)) {
         p.lastAsk = clock();

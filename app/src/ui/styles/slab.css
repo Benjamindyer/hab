@@ -1,8 +1,14 @@
 #slab {
   position: absolute;
   display: flex;
-  gap: calc(var(--u) * 0.45);
+  gap: calc(var(--u) * 0.35);
   transition: all 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Small and out of the way in the corner, on every screen. */
+  left: 6vw;
+  bottom: 8vh;
+  width: 5vmin;
+  height: 10.5vmin;
+  align-items: flex-end;
 }
 
 #slab i {
@@ -10,8 +16,8 @@
   flex: 1;
   position: relative;
   background: linear-gradient(180deg, #d9d6cc 0%, #8c8a84 55%, #4a4a47 100%);
-  border-radius: calc(var(--u) * 0.3);
-  box-shadow: 0 0 calc(var(--u) * 3) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
+  border-radius: calc(var(--u) * 0.25);
+  box-shadow: 0 0 calc(var(--u) * 2) #cfe3ee14, inset 0 0 0 1px #ffffff1a;
 }
 
 #slab i::after {
@@ -24,14 +30,7 @@
   background: #0006;
 }
 
-body[data-scene="ambient"] #slab {
-  left: 6vw;
-  bottom: 8vh;
-  width: 7.5vmin;
-  height: 16vmin;
-  align-items: flex-end;
-}
-
+/* While the voice device is listening, thinking or speaking, the slab comes to the middle. */
 body[data-voice="listening"] #slab,
 body[data-voice="processing"] #slab,
 body[data-voice="responding"] #slab {
@@ -39,28 +38,7 @@ body[data-voice="responding"] #slab {
   top: 34vh;
   bottom: auto;
   transform: translate(-50%, -50%);
-  width: 34vmin;
-  height: 44vmin;
-  align-items: center;
-}
-
-body[data-scene="music"] #slab {
-  left: 6vw;
-  top: 8vh;
-  bottom: auto;
-  width: 7.5vmin;
-  height: 16vmin;
-  align-items: flex-end;
-}
-
-body[data-voice="listening"] #slab,
-body[data-voice="processing"] #slab,
-body[data-voice="responding"] #slab {
-  left: 50%;
-  top: 34vh;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  width: 34vmin;
-  height: 44vmin;
+  width: 26vmin;
+  height: 34vmin;
   align-items: center;
 }
