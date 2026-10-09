@@ -1,6 +1,6 @@
-# Putting HAB on Home Assistant (manual install)
+# Hosting HAB yourself, with your own settings file
 
-The integration in `custom_components/hab` (see the README) is the normal way to install HAB. This page is the manual route: hosting the app yourself in `/config/www`, for testing or if you do not want the integration.
+The normal way to install HAB is the HACS integration (see the README). This page is for two cases: you want to choose your own settings today (the settings page inside HAB is not built yet), or you do not want the integration.
 Steps marked "not tested" have not been tried on a real Home Assistant yet.
 
 ## 1. Build
