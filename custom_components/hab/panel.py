@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from homeassistant.components import frontend
+from homeassistant.components import frontend, panel_custom
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, FRONTEND_DIR, PANEL_ICON, PANEL_PATH, PANEL_TITLE, STATIC_URL
+from .const import DOMAIN, FRONTEND_DIR, PANEL_ELEMENT, PANEL_ICON, PANEL_PATH, PANEL_TITLE, STATIC_URL
 
 
 async def async_serve_frontend(hass: HomeAssistant) -> None:
@@ -21,16 +21,21 @@ async def async_serve_frontend(hass: HomeAssistant) -> None:
     state["static_registered"] = True
 
 
-def add_sidebar_item(hass: HomeAssistant) -> None:
-    """Show HAB in the sidebar, inside Home Assistant's own page."""
-    frontend.async_register_built_in_panel(
+async def async_add_sidebar_item(hass: HomeAssistant) -> None:
+    """Show HAB in the sidebar. Clicking it opens HAB as the whole page.
+
+    Home Assistant's sign-in page reads the address of the top window, so it cannot run inside a
+    frame. A custom panel runs in the top window and can move the page to HAB.
+    """
+    await panel_custom.async_register_panel(
         hass,
-        component_name="iframe",
+        webcomponent_name=PANEL_ELEMENT,
+        frontend_url_path=PANEL_PATH,
+        module_url=f"{STATIC_URL}/panel.js",
         sidebar_title=PANEL_TITLE,
         sidebar_icon=PANEL_ICON,
-        frontend_url_path=PANEL_PATH,
-        config={"url": f"{STATIC_URL}/index.html"},
         require_admin=False,
+        config={},
     )
 
 

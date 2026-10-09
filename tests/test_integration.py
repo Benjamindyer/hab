@@ -23,8 +23,11 @@ async def test_setup_adds_the_sidebar_item(hass):
     await _setup(hass)
     panels = hass.data["frontend_panels"]
     assert PANEL_PATH in panels
-    assert panels[PANEL_PATH].config == {"url": f"{STATIC_URL}/index.html"}
-    assert panels[PANEL_PATH].require_admin is False
+    panel = panels[PANEL_PATH]
+    assert panel.component_name == "custom"
+    assert panel.config["_panel_custom"]["module_url"] == f"{STATIC_URL}/panel.js"
+    assert panel.config["_panel_custom"]["name"] == "hab-panel"
+    assert panel.require_admin is False
 
 
 async def test_unload_removes_the_sidebar_item(hass):
@@ -70,6 +73,14 @@ async def test_a_normal_user_can_read_but_not_save(hass, hass_ws_client, hass_re
     reply = await client.receive_json()
     assert reply["success"] is False
     assert reply["error"]["code"] == "unauthorized"
+
+
+async def test_the_sidebar_script_is_served(hass, hass_client):
+    await _setup(hass)
+    client = await hass_client()
+    response = await client.get(f"{STATIC_URL}/panel.js")
+    assert response.status == 200
+    assert "hab-panel" in await response.text()
 
 
 async def test_the_web_app_is_served(hass, hass_client):

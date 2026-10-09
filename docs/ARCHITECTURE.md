@@ -31,7 +31,7 @@ Files under 250 lines, functions under 50, complexity 10, nesting 3, four parame
 
 ## The integration
 
-Small and boring on purpose. It serves the built app at `/hab_static/`, adds a sidebar item, and stores settings. Reading settings is open to any signed-in user so a wall tablet can start. Saving needs an administrator. It uses public Home Assistant interfaces only. Tests run inside a real test Home Assistant (`tests/`).
+Small and boring on purpose. It serves the built app at `/hab_static/`, adds a sidebar item that opens the app as the whole page (a framed app cannot sign in), and stores settings. Reading settings is open to any signed-in user so a wall tablet can start. Saving needs an administrator. It uses public Home Assistant interfaces only. Tests run inside a real test Home Assistant (`tests/`).
 
 The built app is copied into `custom_components/hab/frontend/` by `npm run build:integration`, so HACS can install it without a build step.
 

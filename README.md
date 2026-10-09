@@ -24,7 +24,7 @@ HAB has two parts that install together: a Home Assistant integration (served by
 4. Search for **HAB** in HACS, open it and press **Download**.
 5. **Restart Home Assistant** (Settings, System, Restart).
 6. Go to **Settings, Devices & services, Add integration**, search for **HAB** and add it. There is nothing to fill in.
-7. HAB now appears in the Home Assistant sidebar. (untested in the sidebar frame)
+7. HAB now appears in the Home Assistant sidebar. Clicking it opens HAB as the whole page (see the note below). Use the browser's Back button to return to Home Assistant.
 
 ### Put it on the tablet
 
@@ -65,6 +65,7 @@ HACS shows a new version when one is released. Download it and restart Home Assi
 ### Troubleshooting
 
 - **A page saying "HAB could not start":** read the message. It names the problem.
+- **"Invalid redirect URI" inside Home Assistant:** that was an earlier version, which framed HAB inside Home Assistant. Home Assistant's sign-in page cannot run inside a frame. Update HAB (version 0.1.1 or later) so the sidebar item opens HAB as the whole page.
 - **Signed out again and again:** the browser may be blocking storage (a private window does this). Use a normal window.
 - **"Lost connection" banner:** the tablet cannot reach Home Assistant. It reconnects by itself when it can.
 - **No Music screen or no playlists:** Spotify must be set up in Home Assistant, and a device must be playing once so playlists can be read.

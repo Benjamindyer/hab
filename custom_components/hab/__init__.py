@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
-from .panel import add_sidebar_item, async_serve_frontend, remove_sidebar_item
+from .panel import async_add_sidebar_item, async_serve_frontend, remove_sidebar_item
 from .storage import ConfigStore
 from .websocket import async_register_commands
 
@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         async_register_commands(hass)
         state["commands_registered"] = True
     await async_serve_frontend(hass)
-    add_sidebar_item(hass)
+    await async_add_sidebar_item(hass)
     return True
 
 

@@ -6,8 +6,9 @@ DOMAIN = "hab"
 STATIC_URL = "/hab_static"
 FRONTEND_DIR = "frontend"
 
-# The sidebar item, shown as /hab inside Home Assistant.
+# The sidebar item, shown as /hab inside Home Assistant. It opens the app as the whole page.
 PANEL_PATH = "hab"
+PANEL_ELEMENT = "hab-panel"
 PANEL_TITLE = "HAB"
 PANEL_ICON = "mdi:robot-happy-outline"
 

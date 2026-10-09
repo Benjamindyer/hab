@@ -31,6 +31,7 @@ Where HAB differs: an iPad-friendly web app, a display that follows a separate v
 - `ai_task.generate_data` takes `task_name` and `instructions` (required), plus optional `entity_id`, `structure` and `attachments`, and returns data. [Certain, read from a running HA]
 - `auth/current_user` reports whether the signed-in user is an admin. [Certain]
 - A page served from another address can sign in to HA with HA's normal login. The library does not save the login unless the app stores it. [Certain]
+- Home Assistant's sign-in page cannot run inside a frame. It reads the query string from the top window, so a framed page that redirects to sign in gets "Invalid redirect URI". [Certain, reproduced on a real HA and traced in the frontend code] An iframe panel therefore cannot host an app that signs in by itself. HAB's sidebar item is a custom panel that opens the app as the whole page instead.
 - The HA integration pieces HAB uses exist and work: static path registration, the built-in iframe panel, WebSocket commands with admin-only checks, and storage. [Certain, tested in a test HA]
 
 ## Spotify through Home Assistant [Certain unless marked]
